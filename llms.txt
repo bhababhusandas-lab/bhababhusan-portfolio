@@ -1,0 +1,28 @@
+# Bhababhusan Das
+
+> Portfolio of Bhababhusan Das, an AI enthusiast and developer based in Odisha, India. He is an engineering graduate (B.Tech in Electrical & Electronics Engineering, 2024; Diploma in Mechanical Engineering, 2021) who explores AI, web technologies and ideas that can become useful digital experiences, learning by building.
+
+The site is a single page designed as an engineer's lab notebook. Projects are presented as "experiments". He is open to opportunities to contribute, learn and grow.
+
+## About
+
+- Name: Bhababhusan Das
+- Role: AI enthusiast / developer
+- Location: Odisha, India
+- Education: B.Tech, Electrical & Electronics Engineering (2024); Diploma, Mechanical Engineering (2021)
+- Toolbox: React / Next.js, TypeScript, Python / FastAPI, SQL, AI integrations
+- Approach: start with a real question; learn with my hands; make the next version better
+
+## Projects
+
+- [Government Tender Platform](https://bhababhusan-portfolio.vercel.app/#experiments): A web platform that reads government tender PDFs and brings legal, financial and technical analysis into one workspace. Specialised AI agents review different parts of each tender. Python, FastAPI, React, SQLAlchemy, Groq, OpenRouter (with automatic provider fallback), Docker.
+- [Legal AI Assistant](https://bhababhusan-portfolio.vercel.app/#experiments): A Next.js legal-help application combining an AI interface with sign-in (NextAuth), validated forms (React Hook Form, Zod), a SQLite database via Prisma, charts and Tailwind CSS.
+- [Branded Link Shortener](https://bhababhusan-portfolio.vercel.app/#experiments): A custom link management product with short URLs, folders and click analytics, built as a Turborepo monorepo with separate web, API and shared packages (Next.js, TypeScript).
+- [IT Company Website](https://bhababhusan-portfolio.vercel.app/#experiments): A responsive multi-page corporate website for an IT services company, built with HTML, CSS and JavaScript, with sitemap, robots.txt and social preview image; deployed on Hostinger.
+
+## Contact
+
+- Email: bhababhusandas@gmail.com
+- LinkedIn: https://www.linkedin.com/in/bhababhusan-das-753770415
+- Instagram: https://www.instagram.com/mr._das._.67/
+- Website: https://bhababhusan-portfolio.vercel.app/
