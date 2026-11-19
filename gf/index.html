@@ -25,8 +25,9 @@ a{color:inherit}
 [hidden]{display:none!important}
 
 /* ───── lock screen ───── */
-.lock{min-height:100svh;display:grid;place-items:center;padding:24px}
-.lock-card{width:min(420px,100%);border:1.5px solid var(--ink);background:var(--card);box-shadow:8px 8px 0 #000a;padding:30px 26px 26px;text-align:center;
+/* minmax(0,…) stops the card from growing to its content width and running off small screens */
+.lock{min-height:100svh;display:grid;grid-template-columns:minmax(0,420px);justify-content:center;align-content:center;padding:24px 18px}
+.lock-card{width:100%;min-width:0;border:1.5px solid var(--ink);background:var(--card);box-shadow:8px 8px 0 #000a;padding:30px 26px 26px;text-align:center;
   animation:drop .7s cubic-bezier(.3,1.4,.4,1)}
 @keyframes drop{from{opacity:0;transform:translateY(-30px) rotate(-3deg)}}
 .lock-label{display:inline-block;font:500 10px var(--mono);letter-spacing:.14em;padding:4px 10px;border:1px solid var(--ink);transform:rotate(-1.2deg);margin:0 0 18px}
@@ -42,7 +43,9 @@ a{color:inherit}
 .lock input{flex:1;min-width:0;font:600 18px var(--mono);letter-spacing:.12em;text-align:center;color:var(--ink);background:var(--paper);
   border:1.5px solid var(--ink);padding:12px 10px;outline:none}
 .lock input:focus{border-color:var(--rose);box-shadow:0 0 0 3px #ff6b8b44}
-.lock button{font:700 12px var(--mono);letter-spacing:.12em;color:#1d2321;background:var(--amber);border:1.5px solid var(--ink);padding:0 16px;cursor:pointer;
+.lock p{overflow-wrap:anywhere}
+@media (max-width:420px){.lock input{font-size:16px;letter-spacing:.06em;padding:12px 6px}.lock-card{padding:26px 18px 22px}}
+.lock button{flex:none;font:700 12px var(--mono);letter-spacing:.12em;color:#1d2321;background:var(--amber);border:1.5px solid var(--ink);padding:0 16px;cursor:pointer;
   box-shadow:3px 3px 0 #000a}
 .lock button:active{transform:translate(2px,2px);box-shadow:1px 1px 0 #000a}
 .lock button:disabled{opacity:.6;cursor:progress}
@@ -147,7 +150,7 @@ a{color:inherit}
     <p>Only one person knows the date that opens it.</p>
     <form id="unlock" autocomplete="off">
       <label for="code" class="sr" style="position:absolute;left:-9999px">Secret date</label>
-      <input id="code" name="code" inputmode="numeric" placeholder="DD / MM / YYYY" maxlength="14" required>
+      <input id="code" name="code" inputmode="numeric" placeholder="DD/MM/YYYY" maxlength="14" required>
       <button type="submit" id="go">OPEN</button>
     </form>
     <p class="msg" id="msg" role="status" aria-live="polite"></p>
@@ -357,7 +360,17 @@ function meter(){
     return {x: 16 * Math.sin(t) ** 3, y: -(13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t))};
   });
   function drawHeart(now){
-    const scale = Math.min(W, H) / 150, cx = W * (W < 700 ? .5 : .8), cy = H * (W < 700 ? .14 : .2);
+    // the constellation sits just after the last word of her name (it scrolls with it), sized to the lettering
+    const words = document.querySelectorAll('#name .word');
+    const last = words[words.length - 1];
+    if (!last) return;
+    const wr = last.getBoundingClientRect();
+    if (wr.bottom < -80 || wr.top > H + 80) return;
+    const scale = Math.max(1.4, Math.min(3.2, wr.height / 26));
+    const halfW = 17 * scale;
+    const roomRight = W - wr.right;
+    const cx = roomRight > halfW * 2 + 24 ? wr.right + 18 + halfW : W - halfW - 12;
+    const cy = roomRight > halfW * 2 + 24 ? wr.top + wr.height * .45 : wr.top - halfW * .6;
     const p = reduce ? 1 : Math.min(1, (now - opened - 2000) / 5000);
     if (p <= 0) return;
     const pts = HEART.map(h => ({x: cx + h.x * scale, y: cy + h.y * scale}));
@@ -383,8 +396,11 @@ function meter(){
   function drawMoon(now){
     const rise = reduce ? 1 : Math.min(1, (now - t0) / 18000);
     const ease = 1 - Math.pow(1 - rise, 3);
-    const r = Math.max(26, Math.min(W, H) * .05);
-    const x = W * (W < 700 ? .16 : .1), y = H * (.42 - .28 * ease);
+    // phones: a small moon slides in at the top-right corner, clear of the text; wide screens: rises in the left margin
+    const small = W < 700;
+    const r = small ? 22 : Math.max(26, Math.min(W, H) * .05);
+    const x = small ? W + 30 - 46 * ease : W * .1;
+    const y = small ? 26 : H * (.42 - .28 * ease);
     const halo = ctx.createRadialGradient(x, y, r * .8, x, y, r * 4);
     halo.addColorStop(0, 'rgba(255,236,214,.28)'); halo.addColorStop(1, 'rgba(255,236,214,0)');
     ctx.globalAlpha = 1; ctx.fillStyle = halo;
