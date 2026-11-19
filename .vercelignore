@@ -1,0 +1,16 @@
+# Kept on your computer, never uploaded to Vercel
+
+# work files
+.claude
+docs
+_backup-v1
+.DS_Store
+
+# unused originals (the site uses the compressed versions)
+assets/bhababhusan.png
+assets/bhababhusan-logo.png
+assets/bhababhusan-logo-transparent.png
+
+# unused 3D experiment
+world3d.js
+assets/vendor

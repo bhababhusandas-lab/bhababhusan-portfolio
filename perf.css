@@ -1,0 +1,25 @@
+/* Lab Notebook · performance fixes (measured: idle 33 fps → see below). Loaded after every effect layer. */
+
+/* 1 · electrons only flow while the page is scrolling, and without the page-tall glow filter.
+       (animating a 6800px-tall masked + filtered path repainted that whole strip every frame) */
+.trace-flow{filter:none;animation-play-state:paused}
+html.is-scrolling .trace-flow{animation-play-state:running}
+
+/* 2 · the header's live backdrop blur was recalculated every frame because things animate inside it
+       (motion-switch bars, scroll meter). A near-solid background looks the same and costs nothing. */
+.header{backdrop-filter:none;-webkit-backdrop-filter:none;background:color-mix(in srgb,var(--paper) 96%,transparent)}
+
+/* 1a · lit circuit = its own layer, revealed by a growing clip window (set from script.js) */
+.circuit-clip{position:absolute;left:0;top:0;width:var(--rail);height:0;overflow:hidden;pointer-events:none;z-index:1}
+.circuit-lit{position:absolute;left:0;top:0;width:var(--rail);overflow:visible;will-change:transform}
+.circuit-lit path{fill:none;stroke-linecap:round;stroke-linejoin:round}
+
+/* 1b · the lit circuit's glow: a soft wide stroke underneath instead of a drop-shadow filter on a page-tall path */
+.trace-live{filter:none}
+.trace-halo{fill:none;stroke:var(--amber);stroke-width:9;stroke-linecap:round;stroke-linejoin:round;opacity:.22}
+html[data-motion=calm] .trace-halo{opacity:.22}
+
+/* 3 · keep heavy glow filters off elements that animate continuously */
+.led.on{box-shadow:0 0 6px var(--amber)}
+.doodle-bulb.in-view{animation-name:none}
+.doodle-bulb.in-view path{stroke:var(--amber)}

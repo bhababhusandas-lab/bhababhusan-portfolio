@@ -1,0 +1,60 @@
+/* Lab Notebook · motion switch (full / calm). Loaded last so calm overrides every effect layer. */
+
+/* the switch */
+.motion-switch{display:flex;align-items:center;gap:9px;padding:6px 10px;border:1.5px solid var(--ink);border-radius:4px;background:var(--card)}
+.motion-label{font:500 10px var(--mono);letter-spacing:.12em;white-space:nowrap}
+.motion-label b{color:var(--amber);font-weight:700}
+.motion-icon{display:flex;align-items:end;gap:2px;height:12px}
+.motion-icon i{width:3px;background:var(--ink);border-radius:1px;animation:eq 1s ease-in-out infinite}
+.motion-icon i:nth-child(1){height:60%}
+.motion-icon i:nth-child(2){height:100%;animation-delay:.2s}
+.motion-icon i:nth-child(3){height:40%;animation-delay:.4s}
+@keyframes eq{50%{transform:scaleY(.35)}}
+.motion-icon i{transform-origin:bottom}
+html[data-motion=calm] .motion-label b{color:var(--blue)}
+@media (max-width:1000px){.motion-label{display:none}.motion-switch{padding:7px 8px}}
+
+/* ───── calm mode ───── */
+html[data-motion=calm]{scroll-behavior:auto}
+html[data-motion=calm] *,html[data-motion=calm] *:before,html[data-motion=calm] *:after{animation:none!important;transition:none!important}
+
+/* show everything that normally waits to animate in */
+html[data-motion=calm] .reveal,
+html[data-motion=calm] .bom.reveal tbody tr{opacity:1!important;transform:none!important;translate:none!important}
+html[data-motion=calm] .note{clip-path:none!important}
+html[data-motion=calm] .sheet-label.stamp-ready{opacity:1!important;transform:rotate(-1.2deg)!important}
+html[data-motion=calm] .scribble path,
+html[data-motion=calm] .doodle path,
+html[data-motion=calm] .flow-arrow{stroke-dashoffset:0!important}
+html[data-motion=calm] .timeline.reveal:before{transform:none!important}
+
+/* switch off cursor followers, particles and overlays */
+html[data-motion=calm] .probe,
+html[data-motion=calm] .pencil,
+html[data-motion=calm] .torch,
+html[data-motion=calm] .spark-p,
+html[data-motion=calm] .egg-part,
+html[data-motion=calm] .flash,
+html[data-motion=calm] .trace-flow,
+html[data-motion=calm] .spark,
+html[data-motion=calm] .scan-line,
+html[data-motion=calm] .scan-tag,
+html[data-motion=calm] .plane,
+html[data-motion=calm] .draft,
+html[data-motion=calm] .boot{display:none!important}
+html[data-motion=calm] .scan:before,html[data-motion=calm] .scan:after{opacity:0!important}
+
+/* no tilt, no magnetic pull, no parallax */
+html[data-motion=calm] .exp,
+html[data-motion=calm] .flow-step,
+html[data-motion=calm] .specimen,
+html[data-motion=calm] .field{transform:none!important}
+html[data-motion=calm] .btn,
+html[data-motion=calm] .power,
+html[data-motion=calm] .motion-switch,
+html[data-motion=calm] .email,
+html[data-motion=calm] .close,
+html[data-motion=calm] nav a{translate:none!important}
+html[data-motion=calm] .ghost-num{transform:none!important}
+html[data-motion=calm] .flap.flipping{color:inherit;background:none}
+html[data-motion=calm] .ch.glitch{color:inherit}
