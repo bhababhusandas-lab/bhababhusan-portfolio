@@ -1,0 +1,12 @@
+/* Lab Notebook · v10 effects */
+
+/* word-by-word headings (the h2 itself still fades in; its words rise one after another) */
+h2.words .w{display:inline-block;opacity:0;transform:translateY(.45em) rotate(3deg);
+  transition:opacity .55s ease,transform .7s cubic-bezier(.2,1.2,.3,1);transition-delay:calc(var(--i) * 85ms + 120ms)}
+h2.words.is-visible .w{opacity:1;transform:none}
+h2.words .hand.w{transition-duration:.6s,.9s}
+
+/* photos tilting with the phone reuse the --rx/--ry tilt already wired into their transform */
+
+html[data-motion=calm] h2.words .w{opacity:1;transform:none}
+@media (prefers-reduced-motion:reduce){h2.words .w{opacity:1;transform:none;transition:none}}
