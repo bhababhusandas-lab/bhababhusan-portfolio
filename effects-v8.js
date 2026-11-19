@@ -44,7 +44,8 @@ $$('.exp-symbol').forEach((sym, i) => {
   const wrap = document.createElement('div');
   wrap.className = 'signature';
   wrap.setAttribute('aria-hidden', 'true');
-  wrap.innerHTML = '<span class="sig-label">SIGNED,</span><svg viewBox="0 0 520 120"><text x="6" y="88">Bhababhusan</text><path class="sig-line" d="M10 104C150 96 330 92 500 98"/></svg>';
+  // textLength squeezes the handwriting to exactly fit the drawing box, so it can never run off the edge
+  wrap.innerHTML = '<span class="sig-label">SIGNED,</span><svg viewBox="0 0 520 120" preserveAspectRatio="xMinYMid meet"><text x="10" y="88" textLength="496" lengthAdjust="spacingAndGlyphs">Bhababhusan</text><path class="sig-line" d="M10 104C150 96 330 92 500 98"/></svg>';
   out.before(wrap);
   const io = new IntersectionObserver(([en]) => {
     if (!en.isIntersecting) return;

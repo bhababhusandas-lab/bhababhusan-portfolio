@@ -30,7 +30,12 @@
 .signature.write .sig-line{animation:sig-write .8s ease 2.9s forwards}
 @keyframes sig-write{to{stroke-dashoffset:0}}
 @keyframes sig-fill{to{fill:var(--amber)}}
-@media (max-width:700px){.signature{margin:40px 0 -20px auto;width:90%}.sig-label{padding-bottom:20px}}
+.signature svg{min-width:0;max-width:100%}
+@media (max-width:700px){
+  .signature{flex-direction:column;align-items:flex-start;gap:4px;margin:40px 0 -10px;width:100%;max-width:340px}
+  .signature svg{width:100%;flex:none}
+  .sig-label{padding-bottom:0}
+}
 
 /* calm mode / reduced motion: show the finished signature, no ripples */
 html[data-motion=calm] .ripple-box{display:none}
