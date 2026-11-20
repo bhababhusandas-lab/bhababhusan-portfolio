@@ -1,0 +1,16 @@
+/* Lab Notebook · v14 effects (main site) */
+
+/* 1 · scattering name: letters move with translate/rotate set from script (separate from the hover bounce) */
+
+/* 2 · REVIEWED rubber stamp on read projects */
+.reviewed{position:absolute;right:16px;top:52px;z-index:4;padding:4px 10px;border:2.5px solid #d9480f;border-radius:4px;color:#d9480f;
+  font:700 12px var(--mono);letter-spacing:.16em;rotate:-11deg;opacity:.85;mix-blend-mode:multiply;pointer-events:none;
+  box-shadow:inset 0 0 0 1px #d9480f55;animation:stamp-down .45s cubic-bezier(.2,1.5,.4,1)}
+.reviewed b{font-weight:700}
+html[data-theme=dark] .reviewed{mix-blend-mode:normal;color:#ff8a5c;border-color:#ff8a5c}
+@keyframes stamp-down{0%{opacity:0;scale:2.2;rotate:-24deg}60%{opacity:.95;scale:.92}100%{opacity:.85;scale:1;rotate:-11deg}}
+
+/* 3 · typed email caret */
+.type-caret{display:inline-block;width:2px;height:1em;margin-left:2px;background:var(--amber);vertical-align:-.12em;animation:type-caret .8s steps(1) infinite}
+@keyframes type-caret{50%{opacity:0}}
+.email{white-space:nowrap}
