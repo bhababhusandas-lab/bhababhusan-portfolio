@@ -379,7 +379,7 @@ html.booting{overflow:hidden}
 .field figcaption{position:absolute;left:12px;bottom:14px;font:500 9px var(--mono);letter-spacing:.1em;color:var(--muted)}
 .field .tape-a{left:auto;right:-22px;top:-10px;transform:rotate(34deg)}
 .note-field{position:absolute;left:calc(100% + 18px);bottom:70px;transform:rotate(-5deg)}
-@media (max-width:980px){.note-field{left:auto;right:6px;bottom:-34px}}
+@media (max-width:980px){.field{margin-bottom:64px}.note-field{left:auto;right:6px;bottom:-40px}}
 @media (max-width:700px){.field{max-width:300px;margin-top:40px}.field img{height:330px}.note-field{font-size:22px}}
 @media (prefers-reduced-motion:reduce){.field.reveal.is-visible{transform:none}}
 
