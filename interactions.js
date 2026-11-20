@@ -307,3 +307,4 @@ import('./effects-v15.js');
 import('./effects-v16.js');
 import('./effects-v17.js');
 import('./effects-v18.js');
+import('./effects-v19.js');

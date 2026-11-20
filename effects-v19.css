@@ -1,0 +1,28 @@
+/* Lab Notebook · v19 effects (main site) */
+
+/* 1 · scissors along the sheet divider */
+.snip-mark{position:absolute;left:0;bottom:0;width:1px;height:1px;pointer-events:none}
+.snip{position:absolute;left:0;bottom:-12px;z-index:4;width:40px;height:24px;pointer-events:none;color:var(--ink)}
+.snip svg{width:100%;height:100%;overflow:visible}
+.snip .blade{fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;transform-origin:20px 12px}
+.snip .blade circle{fill:var(--paper)}
+.snip .pin{fill:var(--amber)}
+.snip .a{animation:snip-a .28s ease-in-out infinite alternate}
+.snip .b{animation:snip-b .28s ease-in-out infinite alternate}
+@keyframes snip-a{from{rotate:-14deg}to{rotate:4deg}}
+@keyframes snip-b{from{rotate:14deg}to{rotate:-4deg}}
+
+/* 2 · copy stamp */
+.copy-stamp{position:absolute;left:0;top:0;z-index:160;display:flex;flex-direction:column;align-items:center;padding:5px 12px 4px;pointer-events:none;
+  border:2.5px solid #2b8a3e;border-radius:4px;color:#2b8a3e;background:color-mix(in srgb,var(--paper) 85%,transparent);
+  font:700 13px var(--mono);letter-spacing:.16em;rotate:-6deg;animation:copy-down .45s cubic-bezier(.2,1.5,.4,1);transition:opacity .45s}
+.copy-stamp small{font:700 15px var(--hand);letter-spacing:0;color:var(--blue)}
+.copy-stamp.still{animation:none}
+.copy-stamp.fade{opacity:0}
+html[data-theme=dark] .copy-stamp{color:#69db7c;border-color:#69db7c}
+@keyframes copy-down{0%{opacity:0;scale:2.2;rotate:-24deg}60%{opacity:.95;scale:.92}100%{opacity:1;scale:1;rotate:-6deg}}
+
+/* 3 · signal arcs on social links */
+.channel .sig{position:relative;display:inline-flex;flex:none;flex-direction:row}
+.channel .sig .arc{position:absolute;left:50%;top:50%;width:26px;height:26px;border-radius:50%;pointer-events:none;
+  border:2px solid var(--amber);border-left-color:transparent;border-bottom-color:transparent;rotate:-45deg;opacity:0}
