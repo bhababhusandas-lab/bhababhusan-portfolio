@@ -1,0 +1,20 @@
+/* Lab Notebook · v11 effects */
+
+/* 1 · x-ray / wireframe view of an experiment card */
+.exp.xray{background:repeating-linear-gradient(0deg,transparent 0 15px,color-mix(in srgb,var(--blue) 22%,transparent) 15px 16px),
+  repeating-linear-gradient(90deg,transparent 0 15px,color-mix(in srgb,var(--blue) 22%,transparent) 15px 16px),#0b1a3d;
+  border-color:#7fd0ff;box-shadow:0 0 0 1px #7fd0ff,0 0 24px #7fd0ff55;color:#7fd0ff}
+.exp.xray *{color:#7fd0ff!important;border-color:#7fd0ff!important;background:transparent!important}
+.exp.xray .exp-top,.exp.xray .exp-body > *,.exp.xray .exp-parts span,.exp.xray .exp-foot,.exp.xray .exp-symbol{outline:1px dashed #7fd0ff99;outline-offset:2px}
+.exp.xray .led{background:#7fd0ff!important;box-shadow:0 0 8px #7fd0ff}
+.exp.xray:before{content:'X-RAY · WIREFRAME VIEW';position:absolute;right:12px;bottom:-22px;font:700 9px var(--mono);letter-spacing:.14em;color:var(--blue)}
+
+/* 2 · scrambled glyphs while shaking */
+.shaken{color:var(--amber)}
+
+/* 3 · page-curl nudge */
+.curl.nudge{animation:curl-nudge 1.4s cubic-bezier(.3,1.6,.4,1)}
+@keyframes curl-nudge{0%,100%{--c:44px}25%{--c:78px}45%{--c:52px}65%{--c:70px}85%{--c:46px}}
+@property --c{syntax:'<length>';inherits:true;initial-value:44px}
+
+html[data-motion=calm] .curl.nudge{animation:none}

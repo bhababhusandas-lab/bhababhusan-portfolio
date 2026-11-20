@@ -66,7 +66,11 @@ a{color:inherit}
 .for{margin:54px 0 0;font:500 12px var(--mono);letter-spacing:.16em;color:var(--muted)}
 .name{margin:6px 0 0;font:700 clamp(58px,12vw,150px)/1 var(--hand);color:var(--rose);letter-spacing:0;text-shadow:0 0 30px #ff6b8b55;min-height:1em}
 .name .word{display:inline-block;white-space:nowrap;opacity:1;transform:none;animation:none}
-.name .word span{display:inline-block;opacity:0;transform:translateY(.35em) rotate(-6deg);animation:letter .6s cubic-bezier(.3,1.5,.4,1) forwards}
+.name .word span{display:inline-block;opacity:0;transform:translateY(.35em) rotate(-6deg);animation:letter .6s cubic-bezier(.3,1.5,.4,1) forwards,twinkle 6s ease-in-out infinite}
+/* a soft glow ripples through her name, letter by letter */
+@keyframes twinkle{0%,12%,100%{text-shadow:0 0 30px #ff6b8b55}5%{text-shadow:0 0 6px #fff,0 0 18px #ffd0dc,0 0 40px #ff6b8b}}
+/* sparkler trail when she drags a finger */
+#light{position:fixed;inset:0;width:100vw;height:100vh;z-index:15;pointer-events:none}
 @keyframes letter{to{opacity:1;transform:none}}
 .ecg{position:relative;margin:30px 0 8px}
 .ecg svg{display:block;width:100%;height:auto;overflow:visible}
@@ -228,7 +232,9 @@ function fill(data){
     [...word].forEach(ch => {
       const s = document.createElement('span');
       s.textContent = ch;
-      s.style.animationDelay = (0.7 + i++ * 0.07) + 's';
+      // first delay: entrance; second: when this letter's glow comes round in the ripple
+      s.style.animationDelay = `${0.7 + i * 0.07}s, ${4 + i * 0.09}s`;
+      i++;
       wrap.appendChild(s);
     });
     name.appendChild(wrap);
@@ -388,6 +394,65 @@ addEventListener('deviceorientation', e => {
 /* set when the page unlocks: starts the heart constellation and the fireflies */
 let opened = null;
 let launchStar = () => {};
+let meteorShower = () => {};
+
+/* shake the phone: a meteor shower */
+(function shakeForMeteors(){
+  let last = 0, hits = 0, first = 0, cool = 0;
+  addEventListener('devicemotion', e => {
+    const a = e.accelerationIncludingGravity || e.acceleration;
+    if (!a || a.x == null || reduce || $('sheet').hidden) return;
+    const now = performance.now();
+    if (Math.hypot(a.x, a.y, a.z || 0) > 24 && now - last > 120) {
+      last = now;
+      if (now - first > 900) { hits = 0; first = now; }
+      if (++hits >= 3 && now > cool) {
+        hits = 0; cool = now + 2500;
+        meteorShower(9);
+        try { navigator.vibrate && navigator.vibrate([20, 30, 20, 30, 20]); } catch (err) {}
+      }
+    }
+  });
+})();
+
+/* draw with light: dragging a finger (or the mouse with the button held) leaves a glowing sparkler trail */
+(function lightDrawing(){
+  if (reduce) return;
+  const c = document.createElement('canvas');
+  c.id = 'light'; c.setAttribute('aria-hidden', 'true');
+  document.body.appendChild(c);
+  const ctx = c.getContext('2d');
+  let pts = [], W = 0, H = 0, running = false;
+  const size = () => { const d = Math.min(2, devicePixelRatio || 1); W = innerWidth; H = innerHeight; c.width = W * d; c.height = H * d; ctx.setTransform(d, 0, 0, d, 0, 0); };
+  addEventListener('resize', size); size();
+  const add = (x, y) => {
+    if ($('sheet').hidden) return;
+    pts.push({x, y, t: performance.now()});
+    if (!running) { running = true; requestAnimationFrame(frame); }
+  };
+  addEventListener('touchmove', e => { const t = e.touches[0]; if (t) add(t.clientX, t.clientY); }, {passive: true});
+  addEventListener('touchstart', e => { const t = e.touches[0]; if (t) { pts.push({x: t.clientX, y: t.clientY, t: performance.now(), gap: true}); } }, {passive: true});
+  addEventListener('pointermove', e => { if (e.pointerType === 'mouse' && e.buttons & 1) add(e.clientX, e.clientY); });
+  addEventListener('pointerdown', e => { if (e.pointerType === 'mouse') pts.push({x: e.clientX, y: e.clientY, t: performance.now(), gap: true}); });
+  const LIFE = 1300;
+  function frame(now){
+    pts = pts.filter(p => now - p.t < LIFE);
+    ctx.clearRect(0, 0, W, H);
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    for (let k = 1; k < pts.length; k++) {
+      const a = pts[k - 1], b = pts[k];
+      if (b.gap) continue;
+      const life = 1 - (now - b.t) / LIFE;
+      ctx.strokeStyle = `rgba(255,107,139,${life * .45})`; ctx.lineWidth = 10 * life; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+      ctx.strokeStyle = `rgba(255,240,245,${life})`; ctx.lineWidth = 2.5 * life + .5; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.lineTo(b.x, b.y); ctx.stroke();
+      if (Math.random() < .25 * life) { // little sparks flying off
+        ctx.fillStyle = `rgba(255,211,77,${life})`;
+        ctx.fillRect(b.x + (Math.random() - .5) * 16, b.y + (Math.random() - .5) * 16, 2, 2);
+      }
+    }
+    if (pts.length) requestAnimationFrame(frame); else { running = false; ctx.clearRect(0, 0, W, H); }
+  }
+})();
 
 /* double-tap the sky to make a wish */
 addEventListener('dblclick', e => {
@@ -495,6 +560,26 @@ function meter(){
   // a wished-for shooting star starts wherever she double-taps
   launchStar = (x, y) => { shoot = {x, y, vx: 10, vy: 4, life: 1}; next = performance.now() + 6000; };
 
+  // meteor shower: several shooting stars at once (shake the phone)
+  const meteors = [];
+  meteorShower = n => {
+    for (let k = 0; k < n; k++) setTimeout(() => meteors.push({
+      x: Math.random() * W * .8 - W * .1, y: Math.random() * H * .4 - 40,
+      vx: 8 + Math.random() * 7, vy: 3 + Math.random() * 3, life: 1
+    }), k * 140);
+  };
+  function drawMeteors(){
+    for (let k = meteors.length - 1; k >= 0; k--) {
+      const m = meteors[k];
+      const g = ctx.createLinearGradient(m.x, m.y, m.x - m.vx * 12, m.y - m.vy * 12);
+      g.addColorStop(0, 'rgba(255,245,250,' + m.life + ')'); g.addColorStop(1, 'rgba(255,107,139,0)');
+      ctx.globalAlpha = 1; ctx.strokeStyle = g; ctx.lineWidth = 1.8;
+      ctx.beginPath(); ctx.moveTo(m.x, m.y); ctx.lineTo(m.x - m.vx * 12, m.y - m.vy * 12); ctx.stroke();
+      m.x += m.vx; m.y += m.vy; m.life -= .016;
+      if (m.life <= 0 || m.x > W + 120 || m.y > H + 120) meteors.splice(k, 1);
+    }
+  }
+
   // fireflies drifting low on the page
   const flies = Array.from({length: 18}, () => ({x: Math.random(), y: .55 + Math.random() * .45, p: Math.random() * 6.28, s: .3 + Math.random() * .7}));
   function drawFireflies(now){
@@ -522,6 +607,7 @@ function meter(){
     drawMoon(now);
     if (opened) drawHeart(now);
     if (opened && !reduce) drawFireflies(now);
+    if (!reduce) drawMeteors();
     if (!reduce) {
       if (!shoot && now > next) shoot = {x: Math.random() * W * .7, y: Math.random() * H * .35, vx: 9 + Math.random() * 5, vy: 3.5 + Math.random() * 2, life: 1};
       if (shoot) {
