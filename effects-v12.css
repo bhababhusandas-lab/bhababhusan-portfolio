@@ -1,0 +1,28 @@
+/* Lab Notebook · v12 effects (main site) */
+
+/* 1 · jelly cards: the grid is skewed from script; keep it on its own layer while it moves */
+#exp-grid{transform-origin:50% 50%;will-change:transform}
+
+/* 2 · toolbox component test */
+.bom tbody tr{cursor:pointer;position:relative}
+.bom tbody tr.testing{background:linear-gradient(90deg,transparent 0%,color-mix(in srgb,var(--amber) 28%,transparent) 50%,transparent 100%) no-repeat;
+  background-size:40% 100%;animation:bom-scan .7s linear}
+@keyframes bom-scan{from{background-position:-60% 0}to{background-position:160% 0}}
+.bom tbody tr.testing td:first-child{animation:bom-blink .14s steps(1) infinite}
+@keyframes bom-blink{50%{color:var(--amber)}}
+.bom tbody tr.tested td:last-child:after{content:' · OK ✓';color:var(--amber);font-weight:700;animation:bom-ok .4s cubic-bezier(.3,1.6,.4,1)}
+@keyframes bom-ok{from{opacity:0}}
+@media (max-width:700px){.bom tbody tr.tested td:last-child:after{content:' ✓'}}
+
+/* 3 · timeline signal pulse */
+.timeline{position:relative}
+.timeline li{border-radius:6px;transition:background .2s}
+.timeline li:hover,.timeline li:focus-visible{background:color-mix(in srgb,var(--amber) 8%,transparent)}
+.tl-pulse{position:absolute;left:2px;width:12px;height:12px;margin-top:-6px;border-radius:50%;background:var(--amber);
+  box-shadow:0 0 10px var(--amber),0 0 22px var(--amber);pointer-events:none;z-index:2}
+.timeline li.emit:before{animation:tl-emit .5s ease-out}
+.timeline li.receive:before{animation:tl-receive .9s cubic-bezier(.3,1.6,.4,1)}
+@keyframes tl-emit{50%{transform:scale(1.6);background:var(--amber);border-color:var(--amber)}}
+@keyframes tl-receive{0%{transform:scale(1)}35%{transform:scale(2);box-shadow:0 0 0 8px var(--amber-glow),0 0 18px var(--amber)}100%{transform:scale(1)}}
+
+html[data-motion=calm] #exp-grid{transform:none!important}

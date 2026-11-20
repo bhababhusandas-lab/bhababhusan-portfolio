@@ -276,3 +276,4 @@ import('./effects-v8.js');
 import('./effects-v9.js');
 import('./effects-v10.js');
 import('./effects-v11.js');
+import('./effects-v12.js');
