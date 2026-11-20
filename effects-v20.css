@@ -1,0 +1,55 @@
+/* Lab Notebook · v20 effects (main site): mechanical + electrical */
+
+/* 1 · test bench */
+.bench{margin:56px 0 0;max-width:620px;border:1.5px solid var(--ink);background:var(--card);box-shadow:6px 6px 0 var(--ink);transition:box-shadow .3s}
+.bench-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 12px;border-bottom:1.5px solid var(--ink)}
+.bench-led{flex:none;width:9px;height:9px;border-radius:50%;background:var(--line);border:1px solid var(--muted);transition:background .2s,box-shadow .2s}
+.bench-led.on{background:#40c057;border-color:#40c057;box-shadow:0 0 8px #40c057}
+.bench.overload .bench-led{background:#fa5252;border-color:#fa5252;box-shadow:0 0 10px #fa5252;animation:bench-blink .25s steps(1) infinite}
+.bench.overload{box-shadow:6px 6px 0 #fa5252}
+@keyframes bench-blink{50%{opacity:.2}}
+.bench-body{display:grid;grid-template-columns:.55fr 1fr;align-items:center;gap:8px;padding:14px 12px 6px;
+  background:linear-gradient(var(--grid-fine) 1px,transparent 1px) 0 0/12px 12px,linear-gradient(90deg,var(--grid-fine) 1px,transparent 1px) 0 0/12px 12px}
+.bench svg{width:100%;height:auto;max-height:190px;display:block;overflow:visible}
+.engine .cyl{fill:none;stroke:var(--ink);stroke-width:3;stroke-linecap:round}
+.engine .plug-top rect{fill:var(--muted)}
+.engine .plug-top path{stroke:var(--ink);stroke-width:2.5}
+.engine .piston{fill:var(--paper-2);stroke:var(--ink);stroke-width:2}
+.engine .ring{stroke:var(--ink);stroke-width:1;opacity:.6}
+.engine .rod{stroke:var(--blue);stroke-width:5;stroke-linecap:round}
+.engine .pin{fill:var(--amber);stroke:var(--ink);stroke-width:1.5}
+.engine .wheel{fill:none;stroke:var(--ink);stroke-width:4}
+.engine .spokes{stroke:var(--muted);stroke-width:2}
+.engine .hub{fill:var(--ink)}
+.engine .spark{opacity:0}
+.engine .spark path{fill:none;stroke:var(--amber);stroke-width:2.2;stroke-linejoin:round}
+.engine .spark circle{fill:var(--amber-glow)}
+.engine .spark.fire{animation:spark-fire .16s ease-out}
+@keyframes spark-fire{0%{opacity:1}100%{opacity:0}}
+.meter .dial{fill:none;stroke:var(--ink);stroke-width:2.5}
+.meter .red{fill:none;stroke:#fa5252;stroke-width:6;opacity:.75}
+.meter .ticks line{stroke:var(--ink);stroke-width:1.6}
+.meter .ticks line.hot{stroke:#fa5252}
+.meter .nums text{font:600 10px var(--mono);fill:var(--muted);text-anchor:middle}
+.meter .unit{font:700 14px var(--mono);fill:var(--blue);text-anchor:middle}
+.meter .needle{stroke:var(--amber);stroke-width:2.5;stroke-linecap:round;filter:drop-shadow(0 1px 1px #0004)}
+.meter .pivot{fill:var(--ink)}
+.bench figcaption{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:8px 12px;border-top:1px dashed var(--line);font:500 10px var(--mono);letter-spacing:.08em;color:var(--muted)}
+.bench figcaption b{color:var(--ink);font-weight:700}
+.bench.overload .b-st{color:#fa5252}
+@media (max-width:700px){.bench{margin-top:40px}.bench-head .mono-label{font-size:9px}}
+
+/* 2 · live-wire flow arrows */
+.flow-arrow .current{fill:none;stroke:var(--amber);stroke-width:3;stroke-linecap:round;stroke-dasharray:3 13;opacity:0;transition:opacity .4s 1.2s;
+  filter:drop-shadow(0 0 3px var(--amber));animation:current-run .7s linear infinite}
+.flow.is-visible .flow-arrow .current,.flow-arrow.drawn .current{opacity:1}
+@keyframes current-run{to{stroke-dashoffset:-16}}
+
+/* 3 · arcing plug */
+.plug .arcs path{fill:none;stroke:#7fd0ff;stroke-width:2;stroke-linejoin:round;filter:drop-shadow(0 0 4px #7fd0ff) drop-shadow(0 0 2px #fff)}
+.plug .arcs path.thin{stroke-width:1;opacity:.7}
+.plug .arcs .zap{fill:var(--amber)}
+html[data-theme=light] .plug .arcs path,:root:not([data-theme=dark]) .plug .arcs path{stroke:#2747d9;filter:drop-shadow(0 0 4px #4dabf7)}
+
+html[data-motion=calm] .flow-arrow .current{animation:none}
+@media (prefers-reduced-motion:reduce){.flow-arrow .current{animation:none}}
