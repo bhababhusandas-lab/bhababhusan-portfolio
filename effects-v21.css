@@ -1,0 +1,98 @@
+/* Lab Notebook · v21 (main site): circuit lab + Trace Runner */
+
+/* layout: test bench and circuit lab side by side on wide screens */
+.lab-row{display:grid;grid-template-columns:1fr;gap:40px;margin-top:56px;align-items:start}
+.lab-row .bench{margin-top:0;max-width:none}
+@media (min-width:1001px){.lab-row{grid-template-columns:1fr 1.15fr;gap:40px;margin-right:60px}}
+@media (max-width:700px){.lab-row{margin-top:40px;gap:32px}}
+
+/* ---------- circuit lab ---------- */
+.circuit-lab{margin:0;border:1.5px solid var(--ink);background:var(--card);box-shadow:6px 6px 0 var(--ink)}
+.cl-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 12px;border-bottom:1.5px solid var(--ink)}
+.cl-led{flex:none;width:9px;height:9px;border-radius:50%;background:var(--line);border:1px solid var(--muted);transition:background .2s,box-shadow .2s}
+.circuit-lab.on .cl-led{background:#40c057;border-color:#40c057;box-shadow:0 0 8px #40c057}
+.cl-svg{display:block;width:100%;height:auto;padding:12px 10px 4px;box-sizing:border-box;overflow:visible;
+  background:linear-gradient(var(--grid-fine) 1px,transparent 1px) 0 0/12px 12px,linear-gradient(90deg,var(--grid-fine) 1px,transparent 1px) 0 0/12px 12px}
+.cl-svg .wire{fill:none;stroke:var(--ink);stroke-width:2.5;stroke-linejoin:round}
+.cl-svg .flow{fill:none;stroke:var(--amber);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:3 14;opacity:0;transition:opacity .3s;filter:drop-shadow(0 0 3px var(--amber))}
+.circuit-lab.on .flow{opacity:1}
+.cl-svg .gap{fill:var(--card)}
+.cl-svg text{font:600 10px var(--mono);fill:var(--muted);text-anchor:middle}
+.cl-svg .batt path{stroke:var(--ink);stroke-width:2.5;fill:none}
+.cl-svg .batt text{text-anchor:start;fill:var(--blue)}
+.cl-svg .batt .pm{fill:#fa5252}
+.cl-svg .sw circle{fill:var(--card);stroke:var(--ink);stroke-width:2}
+.cl-svg .lever{stroke:var(--ink);stroke-width:3;stroke-linecap:round;transform-origin:80px 30px;rotate:-32deg;transition:rotate .25s cubic-bezier(.3,1.6,.5,1)}
+.circuit-lab.on .lever{rotate:0deg;stroke:var(--amber)}
+.cl-svg .hit{fill:transparent;cursor:pointer}
+.cl-svg .zig{fill:none;stroke:var(--ink);stroke-width:2.2;stroke-linejoin:round;transition:stroke .3s,filter .3s}
+.circuit-lab.hot .zig{stroke:#fa5252;filter:drop-shadow(0 0 4px #fa5252)}
+.cl-svg .pot{fill:none;stroke:var(--blue);stroke-width:1.6}
+.cl-svg .r-txt{fill:var(--blue)}
+.cl-svg .motor circle{fill:var(--paper-2);stroke:var(--ink);stroke-width:2.2}
+.cl-svg .motor text{font:700 13px var(--mono);fill:var(--ink)}
+.cl-svg .shaft{stroke:var(--ink);stroke-width:3}
+.cl-svg .gear-s path,.cl-svg .gear-l path:first-child{fill:var(--paper-2);stroke:var(--ink);stroke-width:1.6;stroke-linejoin:round}
+.cl-svg .gear-l path:first-child{fill:#f6d9b0}
+.cl-svg .gear-s circle,.cl-svg .gear-l circle{fill:var(--ink)}
+.cl-svg .fan{stroke:var(--blue);stroke-width:2.5;stroke-linecap:round}
+.cl-svg .diode{fill:#ffc9c9;stroke:var(--ink);stroke-width:2;stroke-linejoin:round;transition:fill .3s}
+.circuit-lab.on .diode{fill:#ff6b6b}
+.cl-svg .glow{fill:#ff6b6b;opacity:0;filter:blur(8px);transition:opacity .25s}
+.cl-svg .rays{fill:none;stroke:#ff6b6b;stroke-width:1.5;opacity:0;transition:opacity .25s}
+.circuit-lab.on .rays{opacity:1}
+.cl-svg .lbl{fill:var(--muted)}
+html[data-theme=dark] .cl-svg .gear-l path:first-child{fill:#3a4f7a}
+.cl-controls{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:8px 12px 10px}
+.cl-power{flex:none;padding:8px 12px;border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);font:700 11px var(--mono);letter-spacing:.1em;cursor:pointer;
+  box-shadow:3px 3px 0 var(--ink);transition:background .2s,box-shadow .15s,translate .15s}
+.cl-power:active{translate:2px 2px;box-shadow:1px 1px 0 var(--ink)}
+.circuit-lab.on .cl-power{background:var(--amber);color:#1d2321}
+.cl-dim{flex:1;min-width:150px;display:flex;align-items:center;gap:10px;font:500 10px var(--mono);letter-spacing:.1em;color:var(--muted)}
+.cl-dim input{flex:1;min-width:0;accent-color:var(--amber);height:24px}
+.circuit-lab figcaption{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;padding:8px 12px;border-top:1px dashed var(--line);font:500 10px var(--mono);letter-spacing:.08em;color:var(--muted)}
+.circuit-lab figcaption b{color:var(--ink)}
+
+/* ---------- arcade card ---------- */
+.arcade{display:flex;align-items:center;gap:22px;margin:40px 60px 0 0;padding:16px 18px;border:1.5px dashed var(--ink);background:var(--card)}
+.arcade-art{flex:none;width:120px}
+.arcade-art svg{width:100%;display:block;overflow:visible}
+.arcade-art .t{fill:none;stroke:var(--amber);stroke-width:6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:150;stroke-dashoffset:150;animation:trace-draw 3s ease-in-out infinite}
+.arcade-art .h{fill:#fff;stroke:var(--ink);stroke-width:1.5;filter:drop-shadow(0 0 4px var(--amber))}
+.arcade-art .part rect{fill:#e9c98b;stroke:var(--ink);stroke-width:1.4}
+.arcade-art .part path{stroke:var(--ink);stroke-width:1.4}
+@keyframes trace-draw{0%{stroke-dashoffset:150}60%,100%{stroke-dashoffset:0}}
+.arcade-txt{flex:1;min-width:0}
+.arcade-txt h3{margin:4px 0 2px;font-size:22px}
+.arcade-txt p{margin:0;color:var(--muted);font-size:14px}
+.arcade-play{flex:none}
+@media (max-width:1000px){.arcade{margin-right:0}}
+@media (max-width:700px){.arcade{flex-direction:column;align-items:stretch;gap:12px}.arcade-art{width:120px}.arcade-play{justify-content:center}}
+html[data-motion=calm] .arcade-art .t{animation:none;stroke-dashoffset:0}
+
+/* ---------- game dialog ---------- */
+dialog.game{width:min(480px,96vw)}
+.game-wrap{display:flex;flex-direction:column;align-items:center;gap:12px;padding:46px 14px 18px}
+.game-wrap>.mono-label{align-self:flex-start;padding-left:4px;font-size:10px}
+.game-hud{display:flex;justify-content:space-between;width:100%;max-width:420px;font:500 11px var(--mono);letter-spacing:.1em;color:var(--muted)}
+.game-hud b{color:var(--ink);font-weight:700}
+.game-board{position:relative;border:2px solid var(--ink);box-shadow:5px 5px 0 var(--ink);touch-action:none;user-select:none;-webkit-user-select:none;line-height:0}
+.game-board canvas{display:block}
+.game-board.shake{animation:board-shake .35s}
+@keyframes board-shake{20%{translate:-6px 0}40%{translate:5px 0}60%{translate:-3px 0}80%{translate:2px 0}}
+.game-msg{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;padding:16px;text-align:center;line-height:1.4;
+  background:color-mix(in srgb,var(--card) 80%,transparent);font:500 11px var(--mono);letter-spacing:.08em;color:var(--muted);pointer-events:none}
+.game-msg[hidden]{display:none}
+.game-msg b{font:700 20px var(--mono);letter-spacing:.12em;color:var(--ink)}
+.game-msg small{font:700 12px var(--mono);color:var(--amber);letter-spacing:.14em}
+.game-msg em{font:700 19px var(--hand);font-style:normal;color:var(--blue);letter-spacing:0;margin-top:6px}
+.dpad{display:grid;grid-template-columns:repeat(3,52px);grid-template-rows:repeat(2,44px);gap:6px}
+.dpad button{border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);font-size:16px;cursor:pointer;box-shadow:2px 2px 0 var(--ink);touch-action:manipulation}
+.dpad button:active{translate:1px 1px;box-shadow:1px 1px 0 var(--ink);background:var(--amber)}
+.dpad [data-d=up]{grid-column:2;grid-row:1}
+.dpad [data-d=left]{grid-column:1;grid-row:2}
+.dpad [data-d=down]{grid-column:2;grid-row:2}
+.dpad [data-d=right]{grid-column:3;grid-row:2}
+@media (pointer:fine){.dpad{display:none}}
+.game-help{margin:0;font:500 10px var(--mono);letter-spacing:.08em;color:var(--muted);text-align:center}
+.game-board canvas:focus{outline:none}
