@@ -1,0 +1,105 @@
+/* Lab Notebook · v22 (main site): Wire Up, Reflex Breaker, Newton's cradle, Geneva drive */
+
+.arcade-more{display:flex;flex-direction:column}
+.arcade-more .arcade{margin-top:18px}
+
+/* card art */
+.wu-art rect{fill:var(--paper);stroke:var(--ink);stroke-width:1.5}
+.wu-art path{fill:none;stroke:var(--amber);stroke-width:5;stroke-linecap:round}
+.wu-art .w2{animation:wu-spin 3s cubic-bezier(.5,1.6,.5,1) infinite;transform-origin:84px 30px}
+.wu-art circle{fill:var(--ink)}
+.wu-art .led{fill:#ff6b6b;animation:wu-led 3s steps(1) infinite}
+@keyframes wu-spin{0%,40%{rotate:-90deg}55%,100%{rotate:0deg}}
+@keyframes wu-led{0%,50%{fill:var(--line)}55%,100%{fill:#ff6b6b}}
+.rb-art rect{fill:var(--paper);stroke:var(--ink);stroke-width:1.5}
+.rb-art .lever{fill:var(--ink);animation:rb-flip 2.4s steps(1) infinite}
+.rb-art .lamp{fill:#fa5252;animation:rb-lamp 2.4s steps(1) infinite}
+.rb-art .lamp2{fill:none;stroke:var(--muted);stroke-width:1.5;stroke-dasharray:3 3}
+@keyframes rb-lamp{0%,55%{fill:#fa5252}56%,100%{fill:#40c057}}
+@keyframes rb-flip{0%,70%{y:14px}71%,100%{y:28px}}
+html[data-motion=calm] .wu-art *,html[data-motion=calm] .rb-art *{animation:none}
+
+/* ---------- Wire Up ---------- */
+.wu-board{position:relative;width:min(400px,100%);border:2px solid var(--ink);box-shadow:5px 5px 0 var(--ink);background:var(--card);line-height:0}
+.wu-svg{display:block;width:100%;height:auto;user-select:none;-webkit-user-select:none;touch-action:manipulation}
+.wu-tile{cursor:pointer;outline:none}
+.wu-tile .cell{fill:var(--paper);stroke:var(--line);stroke-width:1.5;transition:fill .2s}
+.wu-tile:hover .cell,.wu-tile:focus-visible .cell{fill:var(--paper-2)}
+.wu-tile:focus-visible .cell{stroke:var(--amber);stroke-width:2.5}
+.wu-tile .spin{transform-origin:30px 30px;transition:rotate .22s cubic-bezier(.3,1.5,.5,1)}
+.wu-tile .arm{fill:none;stroke:var(--muted);stroke-width:7;stroke-linecap:round;transition:stroke .2s}
+.wu-tile .node{fill:var(--muted)}
+.wu-tile .batt{fill:var(--ink)}
+.wu-tile .batt-mark{stroke:var(--amber);stroke-width:2.2}
+.wu-tile .bulb{fill:var(--card);stroke:var(--ink);stroke-width:2;transition:fill .2s}
+.wu-tile .bulb-x{stroke:var(--ink);stroke-width:1.5}
+.wu-tile.lit .arm{stroke:var(--amber);filter:drop-shadow(0 0 3px var(--amber))}
+.wu-tile.lit .node{fill:var(--amber)}
+.wu-tile.lit .bulb{fill:#ffd43b;filter:drop-shadow(0 0 7px #ffd43b)}
+.wu-svg.win .wu-tile .cell{animation:wu-win .7s ease-out}
+@keyframes wu-win{40%{fill:#ffe8a3}}
+.wu-actions{display:flex;gap:10px;align-items:center}
+.wu-size{border:1.5px solid var(--ink);background:var(--paper);color:var(--ink);font:600 11px var(--mono);padding:9px 8px;letter-spacing:.06em}
+html[data-motion=calm] .wu-tile .spin{transition:none}
+
+/* ---------- Reflex Breaker ---------- */
+.rb-panel{position:relative;display:grid;grid-template-columns:auto 1fr;grid-template-rows:auto auto;align-items:center;gap:14px 18px;width:min(400px,100%);
+  padding:22px 20px;border:2px solid var(--ink);box-shadow:5px 5px 0 var(--ink);background:var(--card);color:var(--ink);text-align:left;cursor:pointer;
+  touch-action:manipulation;user-select:none;-webkit-user-select:none;transition:background .15s}
+.rb-lamp{grid-row:1/3;width:64px;height:64px;border-radius:50%;border:3px solid var(--ink);background:#5c1f1f;transition:background .08s,box-shadow .08s}
+.rb-panel[data-state=wait] .rb-lamp,.rb-panel[data-state=tripped] .rb-lamp{background:#fa5252;box-shadow:0 0 18px #fa5252}
+.rb-panel[data-state=go] .rb-lamp{background:#40c057;box-shadow:0 0 26px #40c057}
+.rb-panel[data-state=go]{background:color-mix(in srgb,#40c057 14%,var(--card))}
+.rb-switch{width:56px;height:30px;border:2px solid var(--ink);border-radius:4px;background:var(--paper-2);position:relative}
+.rb-handle{position:absolute;left:3px;top:3px;width:22px;height:20px;border-radius:3px;background:var(--ink);transition:left .12s cubic-bezier(.3,1.6,.5,1)}
+.rb-panel[data-state=hit] .rb-handle,.rb-panel[data-state=done] .rb-handle{left:27px;background:var(--amber)}
+.rb-text{display:flex;flex-direction:column;gap:4px}
+.rb-text b{font:700 22px var(--mono);letter-spacing:.08em}
+.rb-text em{font:700 17px var(--hand);font-style:normal;color:var(--blue)}
+.rb-panel.trip{animation:board-shake .35s}
+.rb-log{list-style:none;margin:0;padding:0;width:min(400px,100%);display:flex;flex-direction:column;gap:5px}
+.rb-log li{display:grid;grid-template-columns:30px 70px 1fr;align-items:center;gap:8px;font:500 11px var(--mono);color:var(--muted)}
+.rb-log b{color:var(--ink)}
+.rb-log i{height:8px;width:var(--w);background:var(--amber);border-radius:4px;animation:rb-bar .5s ease-out}
+@keyframes rb-bar{from{width:0}}
+
+/* ---------- mechanical workshop ---------- */
+.mech-row{display:grid;grid-template-columns:1fr;gap:32px;margin-top:40px}
+@media (min-width:1001px){.mech-row{grid-template-columns:1fr 1fr;gap:40px;margin-right:60px}}
+.mech{margin:0;border:1.5px solid var(--ink);background:var(--card);box-shadow:6px 6px 0 var(--ink)}
+.mech-head{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:9px 12px;border-bottom:1.5px solid var(--ink)}
+.mech-led{flex:none;width:9px;height:9px;border-radius:50%;background:var(--line);border:1px solid var(--muted);transition:background .2s,box-shadow .2s}
+.mech-led.on{background:#40c057;border-color:#40c057;box-shadow:0 0 8px #40c057}
+.mech svg{display:block;width:100%;height:auto;max-height:240px;overflow:visible;padding:10px 8px 0;box-sizing:border-box;
+  background:linear-gradient(var(--grid-fine) 1px,transparent 1px) 0 0/12px 12px,linear-gradient(90deg,var(--grid-fine) 1px,transparent 1px) 0 0/12px 12px}
+.mech-foot{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:8px 12px 10px;border-top:1px dashed var(--line);font:500 10px var(--mono);letter-spacing:.08em;color:var(--muted)}
+.mech-foot b{color:var(--ink)}
+.mech-btn{padding:7px 11px;font-size:11px}
+.cr-read,.gen-speed{margin-left:auto}
+
+/* cradle */
+.cradle .frame{fill:none;stroke:var(--ink);stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.cradle .str{stroke:var(--muted);stroke-width:1.2}
+.cradle .ball{fill:#adb5bd;stroke:var(--ink);stroke-width:1.8;cursor:grab;touch-action:none}
+.cradle .pend:first-child .ball,.cradle .pend:last-child .ball{fill:#ced4da}
+.cradle .shine{fill:#fff;opacity:.75;pointer-events:none}
+.cradle svg{touch-action:pan-y}
+.cradle .pend{touch-action:none}
+.cradle-hint{font:700 15px var(--hand);fill:var(--blue);text-anchor:middle;transition:opacity .4s}
+.cradle.clack .frame{animation:clack .12s}
+@keyframes clack{50%{stroke:var(--amber)}}
+html[data-theme=dark] .cradle .ball{fill:#8fa3c4}
+
+/* geneva */
+.geneva svg{cursor:pointer}
+.geneva .wheel{fill:#f6d9b0}
+.geneva .wheel-edge{fill:none;stroke:var(--ink);stroke-width:0}
+.geneva .gw{filter:drop-shadow(0 0 0 var(--ink)) drop-shadow(1.5px 0 0 var(--ink)) drop-shadow(-1.5px 0 0 var(--ink)) drop-shadow(0 1.5px 0 var(--ink)) drop-shadow(0 -1.5px 0 var(--ink))}
+.geneva .lock{fill:var(--paper-2)}
+.geneva .dw{filter:drop-shadow(1.5px 0 0 var(--ink)) drop-shadow(-1.5px 0 0 var(--ink)) drop-shadow(0 1.5px 0 var(--ink)) drop-shadow(0 -1.5px 0 var(--ink))}
+.geneva .arm{fill:var(--blue)}
+.geneva .pin{fill:var(--amber)}
+.geneva .hub{fill:var(--ink)}
+.geneva .mark{stroke:#d9480f;stroke-width:3;stroke-linecap:round}
+.geneva.indexing .mech-led{background:var(--amber);border-color:var(--amber);box-shadow:0 0 8px var(--amber)}
+html[data-theme=dark] .geneva .wheel{fill:#3a4f7a}
