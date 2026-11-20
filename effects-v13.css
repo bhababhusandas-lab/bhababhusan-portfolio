@@ -1,0 +1,26 @@
+/* Lab Notebook · v13 effects (main site) */
+
+/* 1 · split-flap clock */
+#clock{display:inline-flex;gap:1px;perspective:120px}
+.clk-digit{display:inline-block;min-width:.62em;text-align:center;padding:0 1px;border-radius:2px;
+  background:color-mix(in srgb,var(--ink) 7%,transparent);transform-origin:50% 50%}
+.clk-sep{display:inline-block;opacity:.6}
+.clk-digit.flip{animation:clk-flip .38s cubic-bezier(.3,1.4,.4,1)}
+@keyframes clk-flip{0%{transform:rotateX(-90deg);color:var(--amber)}60%{color:var(--amber)}100%{transform:none}}
+
+/* 2 · data packet through the flowchart (it passes behind the cards, so it's seen on the arrows between them) */
+.flow{position:relative}
+.flow-step{z-index:1}
+.packet{position:absolute;z-index:0;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:3px;background:var(--amber);
+  box-shadow:0 0 10px var(--amber),0 0 22px var(--amber-glow);pointer-events:none;rotate:45deg}
+.flow-step.active{border-color:var(--amber);box-shadow:0 0 0 3px var(--amber-glow),6px 6px 0 var(--ink);transition:box-shadow .25s,border-color .25s}
+.flow-step.active .mono-label{color:var(--amber)}
+
+/* 3 · experiment LEDs boot-up */
+.exp .led.boot{animation:led-boot 1.1s steps(1,end)}
+@keyframes led-boot{
+  0%,20%,40%{background:var(--amber);border-color:var(--amber);box-shadow:0 0 10px var(--amber)}
+  10%,30%{background:var(--line);box-shadow:none}
+  60%{background:#5fd18b;border-color:#5fd18b;box-shadow:0 0 10px #5fd18b}
+  100%{background:var(--line);box-shadow:none}
+}

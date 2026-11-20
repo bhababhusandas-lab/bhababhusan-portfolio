@@ -195,7 +195,31 @@ $$('h2 .hand, .hero-statement .hand').forEach(h => {
 const clock = $('#clock');
 if (clock) {
   const fmt = new Intl.DateTimeFormat('en-GB', {timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false});
-  const t = () => { clock.textContent = fmt.format(new Date()); };
+  // each character is its own cell; only the cells that change flip, like a split-flap clock
+  clock.setAttribute('aria-live', 'off');
+  let cells = [];
+  const t = () => {
+    const s = fmt.format(new Date());
+    clock.setAttribute('aria-label', `Local time ${s}`);
+    if (cells.length !== s.length) {
+      clock.textContent = '';
+      cells = [...s].map(ch => {
+        const c = document.createElement('span');
+        c.className = ch === ':' ? 'clk-sep' : 'clk-digit';
+        c.textContent = ch;
+        c.setAttribute('aria-hidden', 'true');
+        clock.appendChild(c);
+        return c;
+      });
+      return;
+    }
+    [...s].forEach((ch, i) => {
+      const c = cells[i];
+      if (c.textContent === ch) return;
+      c.textContent = ch;
+      c.classList.remove('flip'); void c.offsetWidth; c.classList.add('flip');
+    });
+  };
   t(); setInterval(t, 1000);
 }
 
@@ -277,3 +301,4 @@ import('./effects-v9.js');
 import('./effects-v10.js');
 import('./effects-v11.js');
 import('./effects-v12.js');
+import('./effects-v13.js');
