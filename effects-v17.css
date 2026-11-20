@@ -15,26 +15,6 @@ html[data-theme=dark] .coffee .ring{fill:none}
 @keyframes coffee-in{0%{opacity:0;scale:.85}100%{opacity:1;scale:1}}
 @media (max-width:700px){.coffee{width:76px;height:76px;bottom:14px}.coffee.left{top:24px}}
 
-/* 2 · rocket back-to-top */
-.rocket{position:fixed;right:56px;bottom:22px;z-index:16;width:46px;height:46px;padding:6px;border:1.5px solid var(--ink);border-radius:50%;
-  background:var(--card);box-shadow:3px 3px 0 var(--ink);cursor:pointer;opacity:0;translate:0 20px;pointer-events:none;
-  transition:opacity .3s,translate .35s cubic-bezier(.3,1.5,.5,1),box-shadow .2s}
-.rocket.on{opacity:1;translate:0 0;pointer-events:auto}
-.rocket:hover{box-shadow:4px 4px 0 var(--amber)}
-.rocket svg{width:100%;height:100%;overflow:visible}
-.rocket .hull{fill:var(--paper);stroke:var(--ink);stroke-width:1.5;stroke-linejoin:round}
-.rocket .port{fill:var(--blue);stroke:var(--ink);stroke-width:1.2}
-.rocket .fin{fill:var(--amber);stroke:var(--ink);stroke-width:1.2;stroke-linejoin:round}
-.rocket .flame{fill:var(--amber);opacity:0;transform-origin:16px 21px;transform:scaleY(.2)}
-.rocket:hover .flame{opacity:.6;transform:scaleY(.6)}
-.rocket.ignite{border-color:transparent;background:transparent;box-shadow:none}
-.rocket.ignite .flame{opacity:1;animation:flame .08s linear infinite alternate}
-@keyframes flame{from{transform:scaleY(1)}to{transform:scaleY(1.6)}}
-.rocket.landing{animation:rocket-land .6s cubic-bezier(.3,1.6,.5,1)}
-@keyframes rocket-land{from{translate:0 40px;opacity:0}to{translate:0 0;opacity:1}}
-.puff{position:fixed;z-index:15;width:16px;height:16px;border-radius:50%;pointer-events:none;background:var(--muted);opacity:0}
-@media (max-width:700px){.rocket{right:14px;bottom:16px;width:42px;height:42px}}
-
 /* 3 · visit receipt */
 .receipt{position:fixed;left:50%;bottom:0;z-index:30;width:min(260px,calc(100vw - 48px));translate:-50% 0;overflow:hidden;pointer-events:none}
 .receipt .paper{pointer-events:auto;display:flex;flex-direction:column;gap:4px;padding:14px 16px 18px;background:#fffdf6;color:#1d2321;
@@ -54,4 +34,3 @@ html[data-theme=dark] .coffee .ring{fill:none}
 .receipt .tear{margin-top:8px;align-self:center;border:1px solid #1d2321;background:none;color:#1d2321;font:600 10px var(--mono);letter-spacing:.12em;padding:5px 10px;cursor:pointer}
 .receipt.torn .paper{transition:transform .6s cubic-bezier(.5,0,.8,.4),opacity .6s;transform:translate(30px,40px) rotate(9deg);opacity:0}
 
-html[data-motion=calm] .rocket{transition:none}

@@ -112,11 +112,18 @@ const lerp = (a, b, t) => a + (b - a) * t;
       // one wrapper per phrase: inside a flex <dd>, loose spaces between items would collapse
       const run = document.createElement('span');
       run.className = 'flap-run';
-      [...t.textContent].forEach(ch => {
-        if (ch.trim() === '') { run.append(ch); return; }
-        const s = document.createElement('span');
-        s.className = 'flap'; s.textContent = ch; s.dataset.c = ch;
-        run.append(s); chars.push(s);
+      // letters grouped per word so a word never breaks mid-letter on narrow screens
+      t.textContent.split(/(\s+)/).forEach(part => {
+        if (!part) return;
+        if (!part.trim()) { run.append(part); return; }
+        const word = document.createElement('span');
+        word.className = 'flap-word';
+        [...part].forEach(ch => {
+          const s = document.createElement('span');
+          s.className = 'flap'; s.textContent = ch; s.dataset.c = ch;
+          word.append(s); chars.push(s);
+        });
+        run.append(word);
       });
       t.replaceWith(run);
     });

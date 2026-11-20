@@ -1,0 +1,33 @@
+/* Lab Notebook · v18 effects (main site) */
+
+/* 1 · flippable field photo */
+.field .photo.flippable{position:relative;cursor:pointer;transform-origin:50% 50%}
+.flip-hint{position:absolute;right:8px;bottom:8px;z-index:2;padding:3px 7px;background:#1d2321cc;color:#fbf8f0;font:600 9px var(--mono);letter-spacing:.12em;
+  border-radius:2px;pointer-events:none;opacity:.85;transition:opacity .3s}
+.flippable:hover .flip-hint{opacity:1}
+.flippable.flipped .flip-hint{opacity:0}
+.photo-back{position:absolute;inset:0;z-index:3;display:none;flex-direction:column;gap:8px;padding:22px 20px;
+  background:#f4ecd8 repeating-linear-gradient(transparent 0 25px,#2747d922 25px 26px);color:#1d2321;font:500 11px/1.4 var(--mono);letter-spacing:.06em}
+.flippable.flipped .photo-back{display:flex}
+.photo-back b{font-weight:700;letter-spacing:.18em;margin-bottom:6px;border-bottom:1.5px solid #1d2321;padding-bottom:6px}
+.photo-back p{display:flex;justify-content:space-between;gap:10px;margin:0}
+.photo-back i{font-style:normal}
+.photo-back i:first-child{color:#5f645d;text-transform:uppercase}
+.photo-back .back-hand{margin-top:auto;font:700 23px/1.1 var(--hand);color:#2747d9;letter-spacing:0;rotate:-3deg}
+.photo-back .back-stamp{align-self:flex-end;margin-top:6px;padding:3px 8px;border:2px solid #d9480f;color:#d9480f;font:700 10px var(--mono);letter-spacing:.14em;rotate:-8deg;opacity:.85}
+
+/* 2 · ink drips from handwritten words */
+.ink-drop{position:absolute;top:92%;width:6px;height:7px;margin-left:-3px;z-index:1;pointer-events:none;opacity:0;
+  background:var(--blue);border-radius:50% 50% 50% 50% / 60% 60% 40% 40%;transform-origin:50% 0}
+.ink-drop.splat{border-radius:50%;opacity:.75;transform-origin:50% 50%}
+.ink-drop.dry{transition:opacity 1.3s;opacity:0}
+
+/* 3 · tappable doodles */
+.doodle.tappable{pointer-events:auto;cursor:pointer;padding:4px;margin:-4px -4px -4px calc(.1em - 4px);box-sizing:content-box}
+.doodle-star.spin{animation:doodle-spin .7s cubic-bezier(.3,1.4,.5,1)}
+@keyframes doodle-spin{from{rotate:0deg;scale:1.5}to{rotate:360deg;scale:1}}
+.doodle-bulb.lit{animation:bulb-lit .9s ease-out}
+@keyframes bulb-lit{0%{filter:drop-shadow(0 0 0 var(--amber))}25%{filter:drop-shadow(0 0 14px var(--amber)) drop-shadow(0 0 4px #fff);scale:1.25}100%{filter:none;scale:1}}
+body.bulb-glow:after{content:'';position:fixed;inset:0;z-index:60;pointer-events:none;background:radial-gradient(circle at 50% 40%,#ffb54733,transparent 70%);animation:bulb-room .9s ease-out forwards}
+@keyframes bulb-room{from{opacity:1}to{opacity:0}}
+.doodle-bit{position:fixed;z-index:70;pointer-events:none;color:var(--amber);font:700 16px var(--sans);text-shadow:0 0 6px var(--amber-glow)}

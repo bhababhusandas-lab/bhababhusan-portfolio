@@ -41,6 +41,7 @@
 
 /* split-flap title block */
 .title-block .flap{display:inline-block}
+.title-block .flap-word{white-space:nowrap}
 .title-block .flap.flipping{color:var(--amber);background:color-mix(in srgb,var(--ink) 9%,transparent);border-radius:2px;
   animation:flap .09s steps(2) infinite}
 @keyframes flap{50%{transform:scaleY(.6)}}
