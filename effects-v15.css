@@ -1,0 +1,23 @@
+/* Lab Notebook · v15 effects (main site) */
+
+/* 1 · "you are here": flipping subtitle + sliding nav marker */
+.wordmark small.here{display:inline-block;transform-origin:50% 0;white-space:nowrap}
+.wordmark small.flip-out{transition:transform .18s ease-in,opacity .18s;transform:rotateX(90deg);opacity:0}
+.wordmark small.flip-in{animation:sub-in .35s cubic-bezier(.3,1.5,.4,1)}
+@keyframes sub-in{from{transform:rotateX(-90deg);opacity:0}to{transform:none;opacity:1}}
+nav{position:relative}
+.nav-marker{position:absolute;left:0;bottom:-10px;height:3px;width:0;border-radius:2px;background:var(--amber);box-shadow:0 0 8px var(--amber);opacity:0;pointer-events:none;
+  transition:transform .45s cubic-bezier(.6,0,.2,1),width .45s cubic-bezier(.6,0,.2,1),opacity .3s}
+nav a[aria-current] i{color:var(--amber)}
+
+/* 2 · tech cross-highlight */
+.exp-parts span{transition:background .2s,color .2s,border-color .2s,transform .2s}
+.exp-parts span.match{background:var(--amber);border-color:var(--amber);color:#1d2321;transform:translateY(-2px)}
+body.tech-focus .exp:not(.uses){opacity:.45;transition:opacity .25s}
+body.tech-focus .exp.uses{transition:opacity .25s}
+
+/* 3 · marching loop under the flowchart */
+.loop svg path{animation:march 1s linear infinite}
+@keyframes march{to{stroke-dashoffset:-12}}
+
+html[data-motion=calm] .nav-marker{transition:none}
