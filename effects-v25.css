@@ -1,0 +1,29 @@
+/* Lab Notebook · v25 (main site) */
+
+/* 1 · LED dot-matrix ticker */
+.ticker{position:relative;margin-top:70px;height:46px;overflow:hidden;border:2px solid var(--ink);background:#12100c;box-shadow:5px 5px 0 var(--ink)}
+.ticker-track{position:absolute;left:0;top:0;height:100%;display:flex;white-space:nowrap;animation:ticker 38s linear infinite;will-change:transform}
+.ticker-track span{display:block;padding-right:0;font:700 26px/46px var(--mono);letter-spacing:.16em;color:#ff9a1f;text-shadow:0 0 8px #ff9a1faa}
+@keyframes ticker{to{transform:translateX(-50%)}}
+/* the dot grid sits on top and turns the text into LEDs */
+.ticker-dots{position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(circle at 50% 50%,transparent 1.3px,#12100c 1.9px) 0 0/4px 4px}
+.ticker:after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(90deg,#12100c,transparent 12%,transparent 88%,#12100c)}
+.output footer{margin-top:28px}
+html[data-motion=calm] .ticker-track{animation-duration:90s}
+@media (prefers-reduced-motion:reduce){.ticker-track{animation:none}}
+@media (max-width:700px){.ticker{margin-top:50px;height:38px}.ticker-track span{font-size:21px;line-height:38px}}
+
+/* 3 · drafting guide line */
+.guide{position:absolute;left:0;bottom:-14px;width:100%;max-width:640px;height:14px;pointer-events:none;color:var(--blue);animation:guide-out .5s ease-in 2.05s forwards}
+.guide i{position:absolute;left:0;top:0;width:100%;height:1.5px;background:currentColor;transform-origin:0 50%;transform:scaleX(0);animation:guide-draw .9s cubic-bezier(.6,0,.3,1) forwards}
+.guide b{position:absolute;top:-3px;width:1.5px;height:8px;background:currentColor;opacity:0;font:500 8px var(--mono);animation:guide-tick .25s ease-out forwards}
+.guide b:nth-of-type(1){left:0;animation-delay:.15s}.guide b:nth-of-type(2){left:25%;animation-delay:.32s}
+.guide b:nth-of-type(3){left:50%;animation-delay:.5s}.guide b:nth-of-type(4){left:75%;animation-delay:.67s}
+.guide b:nth-of-type(5){left:calc(100% - 1.5px);animation-delay:.85s}
+@keyframes guide-draw{to{transform:scaleX(1)}}
+@keyframes guide-tick{from{opacity:0;transform:scaleY(0)}to{opacity:.8;transform:none}}
+@keyframes guide-out{to{opacity:0}}
+
+/* 4 · arcade heading */
+#arcade h2 .w{display:inline-block}
