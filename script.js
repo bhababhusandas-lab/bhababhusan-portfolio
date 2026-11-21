@@ -132,6 +132,7 @@ function build(){
   litSvg.setAttribute('viewBox', `0 0 ${svg.clientWidth} ${height}`);
   litSvg.style.height = height + 'px';
   mainH = height;
+  clip.style.height = height + 'px'; // fixed size; the reveal below slides it with transforms instead of resizing it
 
   const labels = $$('[data-node]');
   const ys = labels.map(l => l.getBoundingClientRect().top + scrollY - mTop + l.offsetHeight / 2);
@@ -171,8 +172,12 @@ function build(){
   const N = 400;
   for (let k = 0; k <= N; k++) {
     const len = total * k / N;
-    samples.push({len, y: live.getPointAtLength(len).y});
+    const pt = live.getPointAtLength(len);
+    samples.push({len, x: pt.x, y: pt.y});
   }
+  // measured once per layout change, not on every scroll frame (reading layout per frame was the main source of scroll lag)
+  mainTopCached = main.getBoundingClientRect().top + scrollY;
+  docHCached = document.documentElement.scrollHeight;
   update();
 }
 
@@ -185,14 +190,25 @@ function lengthAtY(y){
   return a.len + (b.len - a.len) * ((y - a.y) / ((b.y - a.y) || 1));
 }
 
+let mainTopCached = 0, docHCached = 0;
+function pointAtLen(len){ // interpolate the pre-sampled path instead of asking the SVG engine every frame
+  const N = samples.length - 1;
+  if (!N) return {x: 0, y: 0};
+  const f = Math.max(0, Math.min(N, len / (total || 1) * N)), i = Math.min(N - 1, Math.floor(f)), k = f - i;
+  const a = samples[i], b = samples[i + 1];
+  return {x: a.x + (b.x - a.x) * k, y: a.y + (b.y - a.y) * k};
+}
 function update(){
   ticking = false;
-  const mTop = main.getBoundingClientRect().top + scrollY;
-  const atEnd = innerHeight + scrollY >= document.documentElement.scrollHeight - 4;
+  const mTop = mainTopCached;
+  const atEnd = innerHeight + scrollY >= docHCached - 4;
   const front = reduce || atEnd ? Infinity : scrollY + innerHeight * 0.6 - mTop;
   const len = lengthAtY(front);
-  clip.style.height = `${Math.max(0, Math.min(mainH, front))}px`;
-  const tip = live.getPointAtLength(Math.max(0, Math.min(total, len)));
+  // slide the window up and the drawing down by the same amount: only the compositor works, no layout per frame
+  const hide = mainH - Math.max(0, Math.min(mainH, front));
+  clip.style.transform = `translate3d(0, ${(-hide).toFixed(1)}px, 0)`;
+  litSvg.style.transform = `translate3d(0, ${hide.toFixed(1)}px, 0)`;
+  const tip = pointAtLen(Math.max(0, Math.min(total, len)));
   spark.setAttribute('cx', tip.x); spark.setAttribute('cy', tip.y);
   spark.style.opacity = len > 2 && len < total - 2 ? 1 : 0;
   nodes.forEach(n => {

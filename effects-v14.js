@@ -12,10 +12,14 @@ const still = () => reduce || calm();
   if (!hero || !letters.length) return;
   // each letter gets its own speed, sideways drift and spin
   const seed = letters.map((_, i) => ({v: .08 + ((i * 37) % 11) / 30, x: (((i * 53) % 9) - 4) * .06, r: (((i * 71) % 13) - 6) * 1.6}));
-  let ticking = false;
+  let ticking = false, heroH = hero.offsetHeight;
+  new ResizeObserver(() => { heroH = hero.offsetHeight; }).observe(hero); // cached: no layout read per frame
+  let settled = false;
   const update = () => {
     ticking = false;
-    const y = scrollY, h = hero.offsetHeight;
+    const y = scrollY, h = heroH;
+    if (y > h && settled) return; // already off screen and parked: nothing to write
+    settled = y > h;
     if (still() || y > h) {
       if (still()) letters.forEach(l => { l.style.translate = ''; l.style.rotate = ''; l.style.opacity = ''; });
       return;

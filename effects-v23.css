@@ -134,10 +134,10 @@ html[data-motion=calm] .screw{transition:none}
   background:radial-gradient(circle,var(--amber) 0 2px,transparent 2.6px) 0 0/14px 14px;
   -webkit-mask:linear-gradient(#000 0 0) top/100% 5px no-repeat,linear-gradient(#000 0 0) bottom/100% 5px no-repeat,linear-gradient(#000 0 0) left/5px 100% no-repeat,linear-gradient(#000 0 0) right/5px 100% no-repeat;
   mask:linear-gradient(#000 0 0) top/100% 5px no-repeat,linear-gradient(#000 0 0) bottom/100% 5px no-repeat,linear-gradient(#000 0 0) left/5px 100% no-repeat,linear-gradient(#000 0 0) right/5px 100% no-repeat;
-  animation:marquee .6s steps(2) infinite;filter:drop-shadow(0 0 3px var(--amber))}
-.arcade-shelf .arcade:hover:before,.arcade-shelf .arcade:focus-within:before{opacity:1}
+}
+.arcade-shelf .arcade:hover:before,.arcade-shelf .arcade:focus-within:before{opacity:1;animation:marquee .6s steps(2) infinite}
 @keyframes marquee{to{background-position:7px 7px}}
-@media (pointer:coarse){.arcade-shelf .arcade.screwed:before{opacity:.8}}
+@media (pointer:coarse){.arcade-shelf .arcade.screwed:before{opacity:.8;animation:marquee .6s steps(2) 6}}
 html[data-motion=calm] .arcade-shelf .arcade:before{animation:none}
 
 /* 5 cards on the shelf */

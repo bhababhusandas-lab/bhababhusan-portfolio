@@ -407,13 +407,17 @@ function crtPowerOn(){
   }), {threshold: .25});
   panels.forEach(p => io.observe(p));
   // backup in case the observer is slow: power on anything that is clearly on screen
+  const pos = new Map();
+  const measure = () => panels.forEach(p => { const r = p.getBoundingClientRect(); pos.set(p, [r.top + scrollY, r.height]); });
+  measure();
+  new ResizeObserver(measure).observe(document.body); // cached, so the check below never forces a layout
   const sweep = () => {
     let left = 0;
     panels.forEach(p => {
       if (!p.classList.contains('crt-off')) return;
       left++;
-      const r = p.getBoundingClientRect();
-      if (r.top < innerHeight * .8 && r.bottom > innerHeight * .2) on(p, 0);
+      const [top, h] = pos.get(p) || [0, 0], t = top - scrollY;
+      if (t < innerHeight * .8 && t + h > innerHeight * .2) on(p, 0);
     });
     if (!left) removeEventListener('scroll', onScroll);
   };

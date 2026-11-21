@@ -10,7 +10,7 @@ html.is-scrolling .trace-flow{animation-play-state:running}
 .header{backdrop-filter:none;-webkit-backdrop-filter:none;background:color-mix(in srgb,var(--paper) 96%,transparent)}
 
 /* 1a · lit circuit = its own layer, revealed by a growing clip window (set from script.js) */
-.circuit-clip{position:absolute;left:0;top:0;width:var(--rail);height:0;overflow:hidden;pointer-events:none;z-index:1}
+.circuit-clip{position:absolute;left:0;top:0;width:var(--rail);height:0;overflow:hidden;pointer-events:none;z-index:1;will-change:transform}
 .circuit-lit{position:absolute;left:0;top:0;width:var(--rail);overflow:visible;will-change:transform}
 .circuit-lit path{fill:none;stroke-linecap:round;stroke-linejoin:round}
 

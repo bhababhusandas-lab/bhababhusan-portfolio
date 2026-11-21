@@ -85,17 +85,19 @@ const lerp = (a, b, t) => a + (b - a) * t;
   });
   if (els.some(e => !e)) return;
   let target = scrollY * .25, cur = target;
-  addEventListener('scroll', () => { target = scrollY * .25; }, {passive: true});
+  let running = false;
+  addEventListener('scroll', () => { target = scrollY * .25; if (!running) { running = true; requestAnimationFrame(tick); } }, {passive: true});
   const [a, b, c] = els;
   const tick = () => {
     cur = reduce ? target : lerp(cur, target, .12);
+    if (Math.abs(target - cur) < .01) { cur = target; running = false; } // at rest: stop the loop until the next scroll
     a.rot.setAttribute('transform', `rotate(${cur.toFixed(2)})`);
     // meshing gears turn the other way, scaled by the tooth ratio
     b.rot.setAttribute('transform', `rotate(${(-cur * a.n / b.n + 9).toFixed(2)})`);
     c.rot.setAttribute('transform', `rotate(${(-cur * a.n / c.n + 11).toFixed(2)})`);
-    requestAnimationFrame(tick);
+    if (running) requestAnimationFrame(tick);
   };
-  tick();
+  running = true; tick();
 })();
 
 /* 4. split-flap title block */

@@ -1,0 +1,2 @@
+/* Lab Notebook · v24: pause animations in sheets that are off screen */
+.sheet.off *,.sheet.off *::before,.sheet.off *::after{animation-play-state:paused!important}

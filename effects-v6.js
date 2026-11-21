@@ -36,10 +36,14 @@ const fine = matchMedia('(pointer: fine)').matches;
   });
   if (reduce) return;
   let ticking = false;
+  // cache each sheet's page position; re-measure only when the page changes size
+  const measure = () => items.forEach(it => { const r = it.s.getBoundingClientRect(); it.top = r.top + scrollY; it.h = r.height; });
+  measure();
+  new ResizeObserver(() => { measure(); update(); }).observe(document.body);
   const update = () => {
     ticking = false;
-    items.forEach(({s, g}) => {
-      const r = s.getBoundingClientRect();
+    items.forEach(({s, g, top, h}) => {
+      const r = {top: top - scrollY, bottom: top - scrollY + h};
       if (r.bottom < -200 || r.top > innerHeight + 200) return;
       // drift gently around the section's own top, never far enough to spill into the previous sheet
       const shift = Math.max(-70, Math.min(70, (r.top - innerHeight * .25) * -.08));

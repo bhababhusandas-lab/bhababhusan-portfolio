@@ -41,7 +41,7 @@
 
 /* 2 · live-wire flow arrows */
 .flow-arrow .current{fill:none;stroke:var(--amber);stroke-width:3;stroke-linecap:round;stroke-dasharray:3 13;opacity:0;transition:opacity .4s 1.2s;
-  filter:drop-shadow(0 0 3px var(--amber));animation:current-run .7s linear infinite}
+  animation:current-run .7s linear infinite}
 .flow.is-visible .flow-arrow .current,.flow-arrow.drawn .current{opacity:1}
 @keyframes current-run{to{stroke-dashoffset:-16}}
 

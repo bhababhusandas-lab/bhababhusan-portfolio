@@ -317,18 +317,23 @@ function geneva(parent){
   fig.className = 'mech geneva';
   const D = [92, 100], G = [162, 100], C = 70, r = C * Math.SQRT1_2, RW = C * Math.SQRT1_2, RHO = 30;
   const slots = [0, 90, 180, 270].map(a => `<rect x="${16}" y="-6.5" width="${RW + 4}" height="13" rx="6.5" transform="rotate(${a})" fill="#000"/>`).join('');
+  // a slightly 'grown' copy of the shapes, drawn dark underneath, gives an outline without per-frame filters
+  const slotsO = [0, 90, 180, 270].map(a => `<rect x="${17.5}" y="-5" width="${RW + 4}" height="10" rx="5" transform="rotate(${a})" fill="#000"/>`).join('');
+  const cutsO = [45, 135, 225, 315].map(a => { const ar = a * Math.PI / 180; return `<circle cx="${(Math.cos(ar) * C).toFixed(1)}" cy="${(Math.sin(ar) * C).toFixed(1)}" r="${RHO + .5}" fill="#000"/>`; }).join('');
   const cuts = [45, 135, 225, 315].map(a => { const ar = a * Math.PI / 180; return `<circle cx="${(Math.cos(ar) * C).toFixed(1)}" cy="${(Math.sin(ar) * C).toFixed(1)}" r="${RHO + 2}" fill="#000"/>`; }).join('');
   fig.innerHTML = `
     <div class="mech-head"><span class="mono-label">FIG. 4.5 — GENEVA DRIVE · TAP TO CHANGE SPEED</span><span class="mech-led on" aria-hidden="true"></span></div>
     <svg class="gen-svg" viewBox="0 18 250 164" aria-label="Geneva drive mechanism: a continuously turning wheel advances a slotted wheel a quarter turn at a time" role="img">
       <defs>
         <mask id="gen-wheel" maskUnits="userSpaceOnUse" x="-60" y="-60" width="120" height="120"><circle r="${RW}" fill="#fff"/>${slots}${cuts}</mask>
+        <mask id="gen-wheel-o" maskUnits="userSpaceOnUse" x="-60" y="-60" width="120" height="120"><circle r="${RW + 1.5}" fill="#fff"/>${slotsO}${cutsO}</mask>
+        <mask id="gen-lock-o" maskUnits="userSpaceOnUse" x="-50" y="-50" width="100" height="100"><circle r="${RHO + 1.5}" fill="#fff"/><circle cx="${C}" cy="0" r="${RW + 1.5}" fill="#000"/></mask>
         <mask id="gen-lock" maskUnits="userSpaceOnUse" x="-50" y="-50" width="100" height="100"><circle r="${RHO}" fill="#fff"/><circle cx="${C}" cy="0" r="${RW + 3}" fill="#000"/></mask>
       </defs>
-      <g class="gen-driven" transform="translate(${G[0]} ${G[1]})"><g class="gw"><rect x="-60" y="-60" width="120" height="120" class="wheel" mask="url(#gen-wheel)"/>
+      <g class="gen-driven" transform="translate(${G[0]} ${G[1]})"><g class="gw"><rect x="-60" y="-60" width="120" height="120" class="outline" mask="url(#gen-wheel-o)"/><rect x="-60" y="-60" width="120" height="120" class="wheel" mask="url(#gen-wheel)"/>
         <circle r="${RW}" class="wheel-edge" mask="url(#gen-wheel)"/><circle r="6" class="hub"/><path class="mark" d="M0 -10V-22"/></g></g>
       <g class="gen-driver" transform="translate(${D[0]} ${D[1]})"><g class="dw">
-        <rect x="-50" y="-50" width="100" height="100" class="lock" mask="url(#gen-lock)"/>
+        <rect x="-50" y="-50" width="100" height="100" class="outline" mask="url(#gen-lock-o)"/><rect x="-50" y="-50" width="100" height="100" class="lock" mask="url(#gen-lock)"/>
         <rect class="arm" x="-6" y="-7" width="${r + 6}" height="14" rx="7"/><circle class="pin" cx="${r.toFixed(1)}" cy="0" r="5.5"/><circle r="6" class="hub"/></g></g>
     </svg>
     <div class="mech-foot"><span class="gen-read">INPUT <b class="gi">0</b>° · OUTPUT STEP <b class="go">0</b> · <b class="gs">DWELL</b></span><span class="gen-speed">1×</span></div>`;

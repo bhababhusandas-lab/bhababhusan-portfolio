@@ -312,3 +312,4 @@ import('./effects-v20.js');
 import('./effects-v21.js');
 import('./effects-v22.js');
 import('./effects-v23.js');
+import('./effects-v24.js');

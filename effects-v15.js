@@ -52,11 +52,15 @@ const still = () => reduce || calm();
   };
 
   let current = null;
+  // page positions are cached and refreshed only when the page changes size
+  const measure = () => sheets.forEach(s => { s.top = s.el.getBoundingClientRect().top + scrollY; });
+  measure();
+  new ResizeObserver(() => { measure(); current = null; pick(); }).observe(document.body);
   const pick = () => {
     // the sheet whose area covers the line 40% down the screen
     const line = innerHeight * .4;
     let found = sheets[0];
-    sheets.forEach(s => { if (s.el.getBoundingClientRect().top <= line) found = s; });
+    sheets.forEach(s => { if (s.top - scrollY <= line) found = s; });
     if (found.id === current) return;
     current = found.id;
     setLabel(found.label);

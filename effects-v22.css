@@ -94,10 +94,9 @@ html[data-theme=dark] .cradle .ball{fill:#8fa3c4}
 .geneva svg{cursor:pointer}
 .geneva .wheel{fill:#f6d9b0}
 .geneva .wheel-edge{fill:none;stroke:var(--ink);stroke-width:0}
-.geneva .gw{filter:drop-shadow(0 0 0 var(--ink)) drop-shadow(1.5px 0 0 var(--ink)) drop-shadow(-1.5px 0 0 var(--ink)) drop-shadow(0 1.5px 0 var(--ink)) drop-shadow(0 -1.5px 0 var(--ink))}
+.geneva .outline{fill:var(--ink)}
 .geneva .lock{fill:var(--paper-2)}
-.geneva .dw{filter:drop-shadow(1.5px 0 0 var(--ink)) drop-shadow(-1.5px 0 0 var(--ink)) drop-shadow(0 1.5px 0 var(--ink)) drop-shadow(0 -1.5px 0 var(--ink))}
-.geneva .arm{fill:var(--blue)}
+.geneva .arm{fill:var(--blue);stroke:var(--ink);stroke-width:1.5}
 .geneva .pin{fill:var(--amber)}
 .geneva .hub{fill:var(--ink)}
 .geneva .mark{stroke:#d9480f;stroke-width:3;stroke-linecap:round}

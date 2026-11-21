@@ -14,7 +14,7 @@
 .cl-svg{display:block;width:100%;height:auto;padding:12px 10px 4px;box-sizing:border-box;overflow:visible;
   background:linear-gradient(var(--grid-fine) 1px,transparent 1px) 0 0/12px 12px,linear-gradient(90deg,var(--grid-fine) 1px,transparent 1px) 0 0/12px 12px}
 .cl-svg .wire{fill:none;stroke:var(--ink);stroke-width:2.5;stroke-linejoin:round}
-.cl-svg .flow{fill:none;stroke:var(--amber);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:3 14;opacity:0;transition:opacity .3s;filter:drop-shadow(0 0 3px var(--amber))}
+.cl-svg .flow{fill:none;stroke:var(--amber);stroke-width:3.5;stroke-linecap:round;stroke-dasharray:3 14;opacity:0;transition:opacity .3s}
 .circuit-lab.on .flow{opacity:1}
 .cl-svg .gap{fill:var(--card)}
 .cl-svg text{font:600 10px var(--mono);fill:var(--muted);text-anchor:middle}
