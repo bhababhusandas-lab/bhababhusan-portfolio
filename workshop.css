@@ -10,7 +10,7 @@ html[data-theme=dark]{--paper:#0e2350;--ink:#e8f0ff;--muted:#a3b6d9;--line:#bcd2
 :root[data-theme=dark]{color-scheme:dark}
 
 *{box-sizing:border-box}
-html{overflow-x:clip}
+html{overflow-x:clip;scroll-behavior:smooth}
 body{margin:0;color:var(--ink);font:16px/1.6 var(--sans);overflow-x:clip;background-color:var(--paper);
   background-image:linear-gradient(var(--grid) 1px,transparent 1px),linear-gradient(90deg,var(--grid) 1px,transparent 1px),
     linear-gradient(var(--grid-fine) 1px,transparent 1px),linear-gradient(90deg,var(--grid-fine) 1px,transparent 1px);
@@ -60,6 +60,12 @@ a:focus-visible,button:focus-visible,input:focus-visible,canvas:focus-visible{ou
 .ex-ctl input{flex:1;min-width:0;accent-color:var(--amber)}
 .ex-ctl output{min-width:62px;text-align:right;color:var(--amber)}
 
+.ws-jump{display:flex;flex-wrap:wrap;gap:12px;margin-top:26px}
+.ws-jump a{font:600 11px var(--mono);letter-spacing:.12em;padding:9px 14px;border:1.5px solid var(--ink);background:var(--card);box-shadow:3px 3px 0 var(--ink);transition:transform .15s,box-shadow .15s}
+.ws-jump a:hover{transform:translate(-2px,-2px);box-shadow:5px 5px 0 var(--ink)}
+.ws-sec{max-width:1240px;margin:0 auto;padding:40px 5vw 18px;scroll-margin-top:64px}
+.ws-sec h2{margin:4px 0 0;font-size:clamp(32px,5vw,54px);letter-spacing:-.04em;font-weight:600;line-height:1}
+.ws-sec .ws-intro{margin-top:12px}
 .ws-foot{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:14px;max-width:1240px;margin:0 auto;padding:30px 5vw 50px;
   border-top:1px dashed var(--line);font:500 10px var(--mono);letter-spacing:.12em;color:var(--muted)}
 
@@ -71,6 +77,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,canvas:focus-visible{ou
   .ws-hero{padding:40px 16px 24px}
   .ws-gears{width:90px;top:36px;right:16px}
   .ws-grid{padding:6px 16px 30px;gap:22px}
+  .ws-sec{padding:30px 16px 14px}
   .ws-foot{padding:24px 16px 40px}
 }
 @media (max-width:420px){.ws-mark{display:none}.ws-back{margin-right:auto}}

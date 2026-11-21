@@ -345,6 +345,399 @@ const EX = {
   }
 };
 
+/* ---------- software exhibits ---------- */
+const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.random() * (i + 1) | 0; [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const bubbleOps = src => {
+  const a = [...src], o = [];
+  for (let i = 0; i < a.length; i++) for (let j = 0; j < a.length - 1 - i; j++) {
+    o.push([j, j + 1, 0]);
+    if (a[j] > a[j + 1]) { [a[j], a[j + 1]] = [a[j + 1], a[j]]; o.push([j, j + 1, 1]); }
+  }
+  return o;
+};
+const quickOps = src => {
+  const a = [...src], o = [];
+  const q = (lo, hi) => {
+    if (lo >= hi) return;
+    const p = a[hi]; let i = lo;
+    for (let j = lo; j < hi; j++) {
+      o.push([j, hi, 0]);
+      if (a[j] < p) { if (i !== j) { [a[i], a[j]] = [a[j], a[i]]; o.push([i, j, 1]); } i++; }
+    }
+    if (i !== hi) { [a[i], a[hi]] = [a[hi], a[i]]; o.push([i, hi, 1]); }
+    q(lo, i - 1); q(i + 1, hi);
+  };
+  q(0, a.length - 1);
+  return o;
+};
+
+Object.assign(EX, {
+  sort: {
+    st: null,
+    reset() {
+      const base = shuffle(Array.from({length: 24}, (_, i) => i + 1));
+      this.st = {acc: 0, hold: 0, runs: [
+        {name: 'BUBBLE SORT · O(n²)', a: [...base], ops: bubbleOps(base), k: 0, hl: []},
+        {name: 'QUICKSORT · O(n log n)', a: [...base], ops: quickOps(base), k: 0, hl: []}
+      ]};
+    },
+    tap() { this.reset(); },
+    step(dt) {
+      if (!this.st) this.reset();
+      const st = this.st, runs = st.runs;
+      if (runs.every(r => r.k >= r.ops.length)) { st.hold += dt; if (st.hold > 2.2) this.reset(); return; }
+      st.acc += dt * 46;
+      while (st.acc >= 1) {
+        st.acc--;
+        runs.forEach(r => {
+          if (r.k >= r.ops.length) { r.hl = []; return; }
+          const [i, j, sw] = r.ops[r.k++];
+          if (sw) [r.a[i], r.a[j]] = [r.a[j], r.a[i]];
+          r.hl = [i, j, sw];
+        });
+      }
+    },
+    draw(g) {
+      if (!this.st) this.reset();
+      this.st.runs.forEach((r, n) => {
+        const y0 = 14 + n * 146, done = r.k >= r.ops.length;
+        text(g, r.name, 14, y0 + 10, n ? C.blue : C.amber, 10, 'left', 700);
+        text(g, done ? `DONE · ${r.ops.length} STEPS` : `${r.k} STEPS`, 386, y0 + 10, done ? '#2f9e44' : C.muted, 10, 'right');
+        r.a.forEach((v, i) => {
+          const x = 14 + i * 15.5, h = v / 24 * 104;
+          g.fillStyle = done ? '#2f9e44' : r.hl[0] === i || r.hl[1] === i ? (r.hl[2] ? C.red : C.amber) : C.ink;
+          g.fillRect(x, y0 + 124 - h, 12, h);
+        });
+      });
+    }
+  },
+
+  astar: {
+    st: null, cols: 20, rows: 15,
+    gen() {
+      const {cols, rows} = this, n = cols * rows, S = 1 * cols + 1, G = 13 * cols + 18;
+      for (;;) {
+        const wall = new Uint8Array(n);
+        for (let i = 0; i < n; i++) wall[i] = Math.random() < .3 ? 1 : 0;
+        wall[S] = wall[G] = 0;
+        const gs = new Float32Array(n).fill(Infinity), from = new Int16Array(n).fill(-1), closed = new Uint8Array(n), order = [];
+        const hh = i => Math.abs(i % cols - 18) + Math.abs((i / cols | 0) - 13);
+        const open = [S]; gs[S] = 0;
+        while (open.length) {
+          let bi = 0;
+          for (let k = 1; k < open.length; k++) if (gs[open[k]] + hh(open[k]) < gs[open[bi]] + hh(open[bi])) bi = k;
+          const c = open.splice(bi, 1)[0];
+          if (closed[c]) continue;
+          closed[c] = 1; order.push(c);
+          if (c === G) break;
+          const cx = c % cols, cy = c / cols | 0;
+          for (const [dx, dy] of [[1, 0], [-1, 0], [0, 1], [0, -1]]) {
+            const nx = cx + dx, ny = cy + dy;
+            if (nx < 0 || ny < 0 || nx >= cols || ny >= rows) continue;
+            const nb = ny * cols + nx;
+            if (wall[nb] || closed[nb]) continue;
+            if (gs[c] + 1 < gs[nb]) { gs[nb] = gs[c] + 1; from[nb] = c; open.push(nb); }
+          }
+        }
+        if (!closed[G]) continue;
+        const path = []; for (let c = G; c !== -1; c = from[c]) path.unshift(c);
+        this.st = {wall, order, path, S, G, k: 0, p: 0, hold: 0};
+        return;
+      }
+    },
+    tap() { this.gen(); },
+    step(dt) {
+      if (!this.st) this.gen();
+      const st = this.st;
+      if (st.k < st.order.length) st.k = Math.min(st.order.length, st.k + dt * 110);
+      else if (st.p < st.path.length) st.p = Math.min(st.path.length, st.p + dt * 40);
+      else if ((st.hold += dt) > 2) this.gen();
+    },
+    draw(g) {
+      if (!this.st) this.gen();
+      const {wall, order, path, S, G, k, p} = this.st, cols = this.cols, cell = 20;
+      const at = (i, col, inset = 1) => { g.fillStyle = col; g.fillRect(i % cols * cell + inset, (i / cols | 0) * cell + inset, cell - inset * 2, cell - inset * 2); };
+      for (let i = 0; i < k; i++) at(order[i], C.blue + '33', 0);
+      for (let i = 0; i < wall.length; i++) if (wall[i]) at(i, C.ink, 1);
+      if (p > 0) {
+        g.strokeStyle = C.amber; g.lineWidth = 5; g.lineCap = 'round'; g.lineJoin = 'round'; g.beginPath();
+        for (let i = 0; i < Math.floor(p); i++) { const c = path[i], x = c % cols * cell + 10, y = (c / cols | 0) * cell + 10; i ? g.lineTo(x, y) : g.moveTo(x, y); }
+        g.stroke(); g.lineCap = 'butt';
+      }
+      at(S, '#2f9e44', 3); at(G, C.red, 3);
+      text(g, `EXPLORED ${Math.floor(k)}`, 6, 294, C.muted, 9);
+      if (p >= path.length) text(g, `PATH ${path.length - 1} STEPS`, 394, 294, C.amber, 9, 'right');
+    }
+  },
+
+  neural: {
+    st: null, sizes: [3, 5, 5, 2],
+    init() {
+      const W = [];
+      for (let k = 0; k < 3; k++) W.push(Array.from({length: this.sizes[k]}, () => Array.from({length: this.sizes[k + 1]}, () => (Math.random() * 2 - 1) * 1.4)));
+      this.W = W; this.st = {t: 0, act: this.forward()};
+    },
+    forward() {
+      const acts = [Array.from({length: 3}, () => Math.random())];
+      for (let k = 0; k < 3; k++) {
+        const nxt = [];
+        for (let j = 0; j < this.sizes[k + 1]; j++) { let s = 0; acts[k].forEach((a, i) => s += a * this.W[k][i][j]); nxt.push(Math.tanh(s)); }
+        acts.push(nxt);
+      }
+      const o = acts[3].map(Math.exp), sum = o[0] + o[1]; acts[3] = o.map(v => v / sum);
+      return acts;
+    },
+    pos(k, i) { const n = this.sizes[k]; return [60 + k * 96, 150 + (i - (n - 1) / 2) * 50]; },
+    tap() { this.st.t = 0; this.st.act = this.forward(); },
+    step(dt) {
+      if (!this.st) this.init();
+      this.st.t += dt * 1.4;
+      if (this.st.t > 4.6) { this.st.t = 0; this.st.act = this.forward(); }
+    },
+    draw(g, layer) {
+      if (!this.st) this.init();
+      const {t, act} = this.st;
+      layer('edges', g => {
+        for (let k = 0; k < 3; k++) for (let i = 0; i < this.sizes[k]; i++) for (let j = 0; j < this.sizes[k + 1]; j++) {
+          const w = this.W[k][i][j], [x1, y1] = this.pos(k, i), [x2, y2] = this.pos(k + 1, j);
+          line(g, x1, y1, x2, y2, (w > 0 ? C.blue : C.red) + (Math.abs(w) > .8 ? '88' : '33'), .6 + Math.abs(w) * 1.4);
+        }
+        ['INPUT', 'HIDDEN', 'HIDDEN', 'OUTPUT'].forEach((s, k) => text(g, s, 60 + k * 96, 290, C.muted, 9, 'center'));
+      });
+      const k = Math.floor(t), f = t - k;
+      if (k < 3) for (let i = 0; i < this.sizes[k]; i++) for (let j = 0; j < this.sizes[k + 1]; j++) {
+        const [x1, y1] = this.pos(k, i), [x2, y2] = this.pos(k + 1, j);
+        dot(g, x1 + (x2 - x1) * f, y1 + (y2 - y1) * f, 2.5, this.W[k][i][j] > 0 ? C.blue : C.red);
+      }
+      for (let L = 0; L < 4; L++) for (let i = 0; i < this.sizes[L]; i++) {
+        const [x, y] = this.pos(L, i), on = t >= L, a = Math.abs(act[L][i]);
+        dot(g, x, y, 13, C.card, C.ink, 1.5);
+        if (on) { g.globalAlpha = .25 + a * .75; dot(g, x, y, 11, C.amber); g.globalAlpha = 1; }
+      }
+      if (t >= 3) {
+        const [p0, p1] = act[3], win = p0 > p1 ? 0 : 1;
+        ['CAT', 'DOG'].forEach((s, i) => { const [x, y] = this.pos(3, i); text(g, `${s} ${(act[3][i] * 100).toFixed(0)}%`, x + 20, y + 4, i === win ? C.amber : C.muted, 11, 'left', 700); });
+      }
+    }
+  },
+
+  life: {
+    st: null, cols: 50, rows: 37,
+    seed() {
+      const n = this.cols * this.rows, a = new Uint8Array(n);
+      for (let i = 0; i < n; i++) a[i] = Math.random() < .3 ? 1 : 0;
+      this.st = {a, b: new Uint8Array(n), acc: 0, gen: 0, pop: 0, same: 0};
+    },
+    tap() { this.seed(); },
+    step(dt) {
+      if (!this.st) this.seed();
+      const st = this.st, {cols, rows} = this;
+      st.acc += dt;
+      while (st.acc > .09) {
+        st.acc -= .09;
+        let pop = 0;
+        for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+          let nb = 0;
+          for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++) if (dx || dy) nb += st.a[((y + dy + rows) % rows) * cols + (x + dx + cols) % cols];
+          const i = y * cols + x, live = st.a[i] ? (nb === 2 || nb === 3) : nb === 3;
+          st.b[i] = live ? 1 : 0; pop += st.b[i];
+        }
+        [st.a, st.b] = [st.b, st.a];
+        st.same = Math.abs(pop - st.pop) < 3 ? st.same + 1 : 0;
+        st.pop = pop; st.gen++;
+        if (st.same > 40 || st.gen > 500) { this.seed(); return; }
+      }
+    },
+    draw(g, layer) {
+      if (!this.st) this.seed();
+      layer('scr', screen);
+      const {a, gen, pop} = this.st, cols = this.cols;
+      g.fillStyle = C.green;
+      for (let i = 0; i < a.length; i++) if (a[i]) g.fillRect(i % cols * 8 + .5, (i / cols | 0) * 8 + 4.5, 7, 7);
+      g.fillStyle = '#12100ccc'; g.fillRect(0, 0, 400, 16);
+      text(g, `GEN ${gen}`, 8, 12, C.green, 9); text(g, `ALIVE ${pop}`, 392, 12, C.green, 9, 'right');
+    }
+  },
+
+  bsearch: {
+    st: null,
+    reset() {
+      const set = new Set(); while (set.size < 16) set.add(1 + Math.random() * 98 | 0);
+      const arr = [...set].sort((x, y) => x - y);
+      const target = Math.random() < .2 ? (() => { let v; do v = 1 + Math.random() * 98 | 0; while (set.has(v)); return v; })() : arr[Math.random() * 16 | 0];
+      this.st = {arr, target, lo: 0, hi: 15, mid: -1, steps: 0, acc: 0, res: null, hold: 0};
+    },
+    tap() { this.reset(); },
+    step(dt) {
+      if (!this.st) this.reset();
+      const st = this.st;
+      if (st.res) { if ((st.hold += dt) > 2) this.reset(); return; }
+      if ((st.acc += dt) < .75) return;
+      st.acc = 0;
+      if (st.mid < 0) { if (st.lo > st.hi) { st.res = 'miss'; return; } st.mid = (st.lo + st.hi) >> 1; st.steps++; return; }
+      const v = st.arr[st.mid];
+      if (v === st.target) { st.res = 'hit'; return; }
+      if (v < st.target) st.lo = st.mid + 1; else st.hi = st.mid - 1;
+      st.mid = -1;
+    },
+    draw(g) {
+      if (!this.st) this.reset();
+      const {arr, target, lo, hi, mid, steps, res} = this.st;
+      text(g, `FIND ${target}`, 14, 40, C.ink, 20, 'left', 700);
+      text(g, `STEP ${steps} · MAX log₂16 = 4`, 386, 36, C.muted, 10, 'right');
+      arr.forEach((v, i) => {
+        const x = 12 + i * 23.5, y = 120, out = i < lo || i > hi, isMid = i === mid;
+        g.fillStyle = res === 'hit' && isMid ? '#2f9e44' : isMid ? C.amber : out ? C.line : C.card;
+        g.fillRect(x, y, 21, 34); g.strokeStyle = out ? C.line : C.ink; g.lineWidth = 1.2; g.strokeRect(x, y, 21, 34);
+        text(g, String(v), x + 10.5, y + 21, out ? C.muted : C.ink, 10, 'center', 700);
+        text(g, String(i), x + 10.5, y + 50, C.muted, 8, 'center', 500);
+      });
+      const mark = (i, s, col, dy) => { if (i < 0 || i > 15) return; const x = 22.5 + i * 23.5; text(g, s, x, 96 - dy, col, 9, 'center', 700); line(g, x, 100 - dy, x, 114, col, 1.5); };
+      if (!res) { mark(lo, 'lo', C.blue, 0); mark(hi, 'hi', C.blue, lo === hi ? 14 : 0); }
+      if (mid >= 0) mark(mid, 'mid', C.amber, 28);
+      if (res) text(g, res === 'hit' ? `FOUND IN ${steps} STEP${steps > 1 ? 'S' : ''}` : 'NOT IN THE LIST', 200, 230, res === 'hit' ? '#2f9e44' : C.red, 16, 'center', 700);
+      else text(g, 'HALVE THE RANGE EVERY STEP', 200, 230, C.muted, 10, 'center');
+      text(g, 'a linear scan would need up to 16', 200, 262, C.muted, 9, 'center', 500);
+    }
+  },
+
+  request: {
+    st: {t: 0, next: 0, reqs: [], last: null, hits: 0, total: 0},
+    routes: ['GET /projects', 'GET /about', 'POST /contact', 'GET /api/skills', 'GET /blog/ai'],
+    tap() { for (let i = 0; i < 4; i++) this.spawn(this.st.t + i * .12); },
+    spawn(t0) {
+      const cache = Math.random() < .4;
+      this.st.reqs.push({t0, cache, route: this.routes[Math.random() * 5 | 0], ms: cache ? 8 + Math.random() * 14 | 0 : 60 + Math.random() * 90 | 0});
+    },
+    step(dt) {
+      const st = this.st; st.t += dt;
+      if (st.t >= st.next) { this.spawn(st.t); st.next = st.t + .5 + Math.random() * .5; }
+      st.reqs = st.reqs.filter(r => {
+        const dur = r.cache ? 1 : 1.75;
+        if (st.t - r.t0 < dur) return true;
+        st.last = r; st.total++; if (r.cache) st.hits++;
+        return false;
+      });
+    },
+    draw(g, layer) {
+      const st = this.st, Y = 150;
+      layer('stack', g => {
+        g.setLineDash([4, 5]); line(g, 96, Y, 166, Y, C.muted, 1.5); line(g, 234, Y, 304, Y, C.muted, 1.5); g.setLineDash([]);
+        const box = (x, s, sub) => { g.fillStyle = C.card; g.fillRect(x, Y - 32, 70, 64); g.strokeStyle = C.ink; g.lineWidth = 1.8; g.strokeRect(x, Y - 32, 70, 64);
+          text(g, s, x + 35, Y + 2, C.ink, 11, 'center', 700); text(g, sub, x + 35, Y + 18, C.muted, 8, 'center', 500); };
+        box(26, 'CLIENT', 'browser'); box(164, 'API', 'FastAPI');
+        g.fillStyle = C.card; g.strokeStyle = C.ink; g.lineWidth = 1.8;
+        g.beginPath(); g.ellipse(339, Y - 26, 34, 9, 0, 0, TAU); g.fill(); g.stroke();
+        g.fillRect(305, Y - 26, 68, 54); line(g, 305, Y - 26, 305, Y + 28, C.ink, 1.8); line(g, 373, Y - 26, 373, Y + 28, C.ink, 1.8);
+        g.beginPath(); g.ellipse(339, Y + 28, 34, 9, 0, 0, Math.PI); g.stroke();
+        text(g, 'DB', 339, Y + 6, C.ink, 11, 'center', 700); text(g, 'Postgres', 339, Y + 20, C.muted, 8, 'center', 500);
+        text(g, 'TAP TO SEND A BURST', 200, 286, C.muted, 9, 'center');
+      });
+      const lerp = (a, b, f) => a + (b - a) * Math.max(0, Math.min(1, f));
+      st.reqs.forEach((r, n) => {
+        const age = st.t - r.t0, lane = Y - 12 + (n % 3) * 12;
+        let x, col;
+        if (r.cache) {
+          if (age < .4) { x = lerp(96, 164, age / .4); col = C.blue; }
+          else if (age < .6) { x = 199; col = C.amber; }
+          else { x = lerp(164, 96, (age - .6) / .4); col = C.amber; }
+        } else {
+          if (age < .35) { x = lerp(96, 164, age / .35); col = C.blue; }
+          else if (age < .7) { x = lerp(234, 304, (age - .35) / .35); col = C.blue; }
+          else if (age < 1) { x = 339; col = C.blue; }
+          else if (age < 1.35) { x = lerp(304, 234, (age - 1) / .35); col = '#2f9e44'; }
+          else { x = lerp(164, 96, (age - 1.35) / .4); col = '#2f9e44'; }
+        }
+        dot(g, x, lane, 5, col, C.ink, 1);
+      });
+      if (st.last) {
+        const r = st.last;
+        text(g, `${r.route}`, 14, 30, C.ink, 12, 'left', 700);
+        text(g, `200 OK · ${r.ms} ms${r.cache ? ' · CACHE HIT' : ''}`, 14, 48, r.cache ? C.amber : '#2f9e44', 10);
+      }
+      text(g, `CACHE HIT RATE ${st.total ? Math.round(st.hits / st.total * 100) : 0}%`, 386, 30, C.muted, 9, 'right');
+      text(g, `REQUESTS ${st.total}`, 386, 46, C.muted, 9, 'right');
+      dot(g, 40, 252, 4, C.blue); text(g, 'request', 50, 255, C.muted, 9);
+      dot(g, 130, 252, 4, '#2f9e44'); text(g, 'db response', 140, 255, C.muted, 9);
+      dot(g, 240, 252, 4, C.amber); text(g, 'cache response', 250, 255, C.muted, 9);
+    }
+  },
+
+  train: {
+    st: null,
+    reset() {
+      const loss = [], acc = [];
+      for (let e = 1; e <= 20; e++) { const l = .08 + 2.1 * Math.exp(-e / 4.5) + (Math.random() - .5) * .06; loss.push(l); acc.push(Math.min(99.4, 100 - l * 34 + (Math.random() - .5) * 1.5)); }
+      this.st = {t: 0, loss, acc};
+    },
+    tap() { this.reset(); },
+    step(dt) { if (!this.st) this.reset(); this.st.t += dt; if (this.st.t > 1 + 20 * .38 + 2.8) this.reset(); },
+    draw(g, layer) {
+      if (!this.st) this.reset();
+      layer('scr', screen);
+      const {t, loss, acc} = this.st, cmd = '$ python train.py --epochs 20';
+      const typed = cmd.slice(0, Math.floor(Math.min(1, t / .9) * cmd.length));
+      text(g, typed + (t < 1 && Math.floor(t * 4) % 2 ? '▌' : ''), 12, 22, '#e9fbe9', 10, 'left', 500);
+      const ep = Math.max(0, Math.min(20, Math.floor((t - 1) / .38)));
+      for (let k = Math.max(0, ep - 6), row = 0; k < ep; k++, row++) {
+        const bar = '█'.repeat(Math.round((k + 1) / 2)).padEnd(10, '·');
+        text(g, `epoch ${String(k + 1).padStart(2, '0')}/20 ${bar} loss ${loss[k].toFixed(3)} acc ${acc[k].toFixed(1)}%`, 12, 42 + row * 16, k === ep - 1 ? C.green : '#69db7c99', 9, 'left', 500);
+      }
+      if (ep === 20) text(g, '✓ saved model.pt', 12, 42 + 7 * 16, C.amber, 10, 'left', 700);
+      // loss curve
+      const x0 = 40, x1 = 388, yb = 284, yt = 176;
+      line(g, x0, yb, x1, yb, '#ffffff33', 1); line(g, x0, yt, x0, yb, '#ffffff33', 1);
+      text(g, 'LOSS', 12, yt + 8, '#ffffff77', 8);
+      if (ep > 0) {
+        g.strokeStyle = C.amber; g.lineWidth = 2; g.beginPath();
+        for (let k = 0; k < ep; k++) { const x = x0 + k / 19 * (x1 - x0), y = yb - loss[k] / 2.2 * (yb - yt); k ? g.lineTo(x, y) : g.moveTo(x, y); }
+        g.stroke();
+      }
+    }
+  },
+
+  hash: {
+    st: null,
+    keys: ['react', 'python', 'fastapi', 'sql', 'nextjs', 'ai', 'node', 'git', 'css', 'docker', 'redis', 'llm'],
+    h(s) { let x = 5381; for (const c of s) x = (x * 33 + c.charCodeAt(0)) >>> 0; return x; },
+    reset() { this.st = {b: Array.from({length: 8}, () => []), i: 0, t: 0, fly: null, hold: 0}; },
+    tap() { this.reset(); },
+    step(dt) {
+      if (!this.st) this.reset();
+      const st = this.st;
+      st.t += dt;
+      if (st.fly && st.t - st.fly.t0 > .7) { st.b[st.fly.bk].push(st.fly.key); st.fly = null; }
+      if (!st.fly && st.t > .3) {
+        if (st.i < this.keys.length) { const key = this.keys[st.i++]; st.fly = {key, bk: this.h(key) % 8, t0: st.t}; }
+        else if ((st.hold += dt) > 2.4) this.reset();
+      }
+    },
+    draw(g) {
+      if (!this.st) this.reset();
+      const st = this.st, rowY = i => 44 + i * 31;
+      for (let i = 0; i < 8; i++) {
+        const y = rowY(i);
+        g.strokeStyle = C.ink; g.lineWidth = 1.2; g.strokeRect(14, y, 34, 24);
+        text(g, `[${i}]`, 31, y + 16, C.blue, 10, 'center', 700);
+        st.b[i].forEach((k, n) => {
+          const x = 64 + n * 74;
+          line(g, x - 16, y + 12, x - 2, y + 12, C.muted, 1.2);
+          g.fillStyle = n ? C.amber + '44' : C.card; g.fillRect(x, y, 62, 24); g.strokeRect(x, y, 62, 24);
+          text(g, k, x + 31, y + 16, C.ink, 10, 'center', 700);
+        });
+      }
+      if (st.fly) {
+        const {key, bk, t0} = st.fly, f = Math.min(1, (st.t - t0) / .7), e = 1 - Math.pow(1 - f, 3);
+        const tx = 64 + st.b[bk].length * 74, ty = rowY(bk);
+        const x = 300 + (tx - 300) * e, y = 4 + (ty - 4) * e;
+        g.fillStyle = C.amber; g.fillRect(x, y, 62, 24);
+        text(g, key, x + 31, y + 16, '#1d2321', 10, 'center', 700);
+        text(g, `h("${key}") % 8 = ${bk}${st.b[bk].length ? ' · COLLISION' : ''}`, 14, 26, st.b[bk].length ? C.red : C.ink, 11, 'left', 700);
+      } else text(g, `LOAD ${st.i}/8 = ${(st.i / 8).toFixed(2)}`, 14, 26, C.muted, 10);
+    }
+  }
+});
+
 /* ---------- setup ---------- */
 const items = [];
 document.querySelectorAll('.ex').forEach(el => {
@@ -369,7 +762,7 @@ document.querySelectorAll('.ex').forEach(el => {
     inp.addEventListener('input', set); set();
   });
   if (ex.tap) {
-    cv.tabIndex = 0;
+    cv.tabIndex = 0; cv.style.cursor = 'pointer';
     const act = () => { ex.tap(); try { matchMedia('(pointer: coarse)').matches && navigator.vibrate && navigator.vibrate(8); } catch (e) {} if (paused) paint(it); };
     cv.addEventListener('click', act);
     cv.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); act(); } });

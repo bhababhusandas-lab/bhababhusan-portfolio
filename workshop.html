@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#f3efe4">
-<meta name="description" content="The Workshop: live mechanical and electrical exhibits by Bhababhusan Das. A piston engine, planetary gears, three-phase power, a governor, an oscilloscope and more.">
+<meta name="description" content="The Workshop: live mechanical, electrical and software exhibits by Bhababhusan Das. A piston engine, planetary gears, three-phase power, sorting, A* pathfinding, a neural network and more.">
 <meta name="author" content="Bhababhusan Das">
 <title>The Workshop | Bhababhusan Das</title>
 <link rel="canonical" href="https://bhababhusan-portfolio.vercel.app/workshop">
@@ -34,15 +34,17 @@
 
 <main id="main">
   <section class="ws-hero">
-    <p class="ws-label">ANNEX A · 10 WORKING EXHIBITS</p>
+    <p class="ws-label">ANNEX A · 18 WORKING EXHIBITS</p>
     <h1>The <span class="hand">Workshop.</span></h1>
-    <p class="ws-intro">The notebook ran out of pages, so the machines moved in here. Everything below runs live. Drag the sliders, tap the screens, and watch the mechanics and the electrics do their thing.</p>
+    <p class="ws-intro">The notebook ran out of pages, so the machines moved in here. Everything below runs live. Drag the sliders, tap the screens, and watch the mechanics, the electrics and the code do their thing.</p>
+    <nav class="ws-jump" aria-label="Workshop sections"><a href="#hardware">⚙ HARDWARE · 10</a><a href="#software">{ } SOFTWARE · 8</a></nav>
     <svg class="ws-gears" viewBox="0 0 120 70" aria-hidden="true">
       <g class="g1"><circle cx="35" cy="35" r="22"/><circle cx="35" cy="35" r="6"/></g>
       <g class="g2"><circle cx="83" cy="35" r="15"/><circle cx="83" cy="35" r="4"/></g>
     </svg>
   </section>
 
+  <div class="ws-sec" id="hardware"><p class="ex-tag">BENCH 1</p><h2>Hardware <span class="hand">bench.</span></h2></div>
   <div class="ws-grid">
     <article class="ex" data-ex="engine">
       <p class="ex-tag">EXH. 01 · MECHANICAL</p>
@@ -118,6 +120,73 @@
       <h2>Pendulum wave</h2>
       <canvas aria-label="Fifteen pendulums of different lengths forming travelling waves, seen from above"></canvas>
       <p class="ex-note">Fifteen pendulums, each a little shorter than the last, seen from above. They drift into snakes and braids, then line up again every 24 seconds.</p>
+    </article>
+  </div>
+
+  <div class="ws-sec" id="software"><p class="ex-tag">BENCH 2</p><h2>Software <span class="hand">bench.</span></h2>
+    <p class="ws-intro">Algorithms and systems I work with every day, slowed down enough to watch. Tap any screen to run it again.</p></div>
+  <div class="ws-grid">
+    <article class="ex" data-ex="neural">
+      <p class="ex-tag">EXH. 11 · AI</p>
+      <h2>Neural network</h2>
+      <canvas aria-label="A small neural network passing a signal from inputs to outputs"></canvas>
+      <p class="ex-note">A tiny 3-5-5-2 network doing a forward pass. Blue weights excite, red ones inhibit, and softmax turns the last layer into a guess.</p>
+      <p class="ex-hint">TAP FOR A NEW INPUT</p>
+    </article>
+
+    <article class="ex" data-ex="train">
+      <p class="ex-tag">EXH. 12 · AI</p>
+      <h2>Training run</h2>
+      <canvas aria-label="Terminal running a training script with the loss curve falling"></canvas>
+      <p class="ex-note">Twenty epochs in a terminal. The loss drops fast and then flattens: most of the learning happens early.</p>
+      <p class="ex-hint">TAP TO TRAIN AGAIN</p>
+    </article>
+
+    <article class="ex" data-ex="sort">
+      <p class="ex-tag">EXH. 13 · ALGORITHMS</p>
+      <h2>Sorting race</h2>
+      <canvas aria-label="Bubble sort and quicksort racing on the same shuffled bars"></canvas>
+      <p class="ex-note">Same shuffled list, same speed per step. Quicksort finishes while bubble sort is still swapping neighbours.</p>
+      <p class="ex-hint">TAP TO SHUFFLE</p>
+    </article>
+
+    <article class="ex" data-ex="astar">
+      <p class="ex-tag">EXH. 14 · ALGORITHMS</p>
+      <h2>A* pathfinding</h2>
+      <canvas aria-label="A star search exploring a maze and drawing the shortest path"></canvas>
+      <p class="ex-note">A* explores toward the goal, guided by distance, then traces the shortest route back. This is how maps and game characters find their way.</p>
+      <p class="ex-hint">TAP FOR A NEW MAZE</p>
+    </article>
+
+    <article class="ex" data-ex="request">
+      <p class="ex-tag">EXH. 15 · WEB</p>
+      <h2>Request lifecycle</h2>
+      <canvas aria-label="Web requests travelling from client to API to database and back"></canvas>
+      <p class="ex-note">Client to API to database and back. A cache answers many requests without touching the database, and much faster.</p>
+    </article>
+
+    <article class="ex" data-ex="hash">
+      <p class="ex-tag">EXH. 16 · DATA STRUCTURES</p>
+      <h2>Hash map</h2>
+      <canvas aria-label="Keys hashed into eight buckets with collisions chained"></canvas>
+      <p class="ex-note">Each key is hashed to a bucket number. When two keys land in the same bucket they chain together, which is why lookups stay fast but not free.</p>
+      <p class="ex-hint">TAP TO START OVER</p>
+    </article>
+
+    <article class="ex" data-ex="bsearch">
+      <p class="ex-tag">EXH. 17 · ALGORITHMS</p>
+      <h2>Binary search</h2>
+      <canvas aria-label="Binary search halving a sorted list to find a number"></canvas>
+      <p class="ex-note">On a sorted list, check the middle and throw half away. Sixteen items take at most four looks.</p>
+      <p class="ex-hint">TAP FOR A NEW TARGET</p>
+    </article>
+
+    <article class="ex" data-ex="life">
+      <p class="ex-tag">EXH. 18 · SIMULATION</p>
+      <h2>Game of Life</h2>
+      <canvas aria-label="Conway's Game of Life cellular automaton"></canvas>
+      <p class="ex-note">Conway's four rules on a grid of cells, and gliders and blinkers appear from nothing. A whole world from a few lines of code.</p>
+      <p class="ex-hint">TAP TO RESEED</p>
     </article>
   </div>
 
