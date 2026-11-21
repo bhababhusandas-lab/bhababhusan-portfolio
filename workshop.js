@@ -738,6 +738,237 @@ Object.assign(EX, {
   }
 });
 
+/* ---------- code arcade: four small software games ---------- */
+const best = (k, v) => {
+  try { const b = +localStorage.getItem('ws-best-' + k) || 0; if (v > b) localStorage.setItem('ws-best-' + k, String(v)); return Math.max(b, v); }
+  catch (e) { return v; }
+};
+const zap = p => { try { matchMedia('(pointer: coarse)').matches && navigator.vibrate && navigator.vibrate(p); } catch (e) {} };
+const overlay = (g, title, sub, bestScore) => {
+  g.fillStyle = C.paper + 'e0'; g.fillRect(0, 0, W, H);
+  text(g, title, 200, 128, C.ink, 22, 'center', 700);
+  text(g, sub, 200, 156, C.amber, 11, 'center', 700);
+  if (bestScore) text(g, `BEST ${bestScore}`, 200, 180, C.muted, 10, 'center');
+};
+const startKey = k => k === ' ' || k === 'Enter';
+
+Object.assign(EX, {
+  bugs: {
+    game: true,
+    st: {mode: 'idle', bugs: [], splats: [], score: 0, lives: 3, t: 0, next: 0, best: best('bugs', 0)},
+    code: ['def load_projects(user):', '    rows = db.query(SQL, user.id)', '    if not rows:', '        return []', '    for r in rows:', '        r.tags = parse(r.meta)', '    cache.set(user.id, rows)', '    return render(rows)'],
+    start() { Object.assign(this.st, {mode: 'play', bugs: [], splats: [], score: 0, lives: 3, next: this.st.t + .4}); },
+    pointer(x, y) {
+      const st = this.st;
+      if (st.mode !== 'play') { this.start(); return; }
+      let hit = null, d = 26;
+      st.bugs.forEach(b => { const dd = Math.hypot(b.x - x, b.y - y); if (dd < d) { d = dd; hit = b; } });
+      if (hit) { st.bugs = st.bugs.filter(b => b !== hit); st.splats.push({x: hit.x, y: hit.y, t: st.t}); st.score++; zap(12); }
+    },
+    key(k) { if (startKey(k) && this.st.mode !== 'play') { this.start(); return true; } return false; },
+    step(dt) {
+      const st = this.st; st.t += dt;
+      st.splats = st.splats.filter(s => st.t - s.t < 1.2);
+      if (st.mode !== 'play') return;
+      const lvl = 1 + st.score / 8;
+      if (st.t >= st.next) {
+        st.bugs.push({x: -12, y: 40 + (Math.random() * 8 | 0) * 30, v: (30 + Math.random() * 25) * Math.pow(lvl, .7), ph: Math.random() * 6});
+        st.next = st.t + Math.max(.32, 1.25 / Math.sqrt(lvl));
+      }
+      st.bugs.forEach(b => { b.x += b.v * dt; });
+      const before = st.bugs.length;
+      st.bugs = st.bugs.filter(b => b.x < 372);
+      if (st.bugs.length < before) { st.lives -= before - st.bugs.length; zap([30, 40, 30]); }
+      if (st.lives <= 0) { st.mode = 'over'; st.best = best('bugs', st.score); }
+    },
+    draw(g, layer) {
+      const st = this.st;
+      layer('code', g => {
+        this.code.forEach((s, i) => {
+          const y = 44 + i * 30;
+          text(g, String(i + 1).padStart(2, ' '), 18, y, C.muted + '88', 10, 'right', 500);
+          text(g, s, 28, y, C.muted, 11, 'left', 500);
+        });
+        g.fillStyle = C.red + '22'; g.fillRect(372, 22, 28, 248);
+        g.save(); g.translate(390, 146); g.rotate(-Math.PI / 2); text(g, 'PRODUCTION', 0, 4, C.red, 10, 'center', 700); g.restore();
+      });
+      st.splats.forEach(s => { g.globalAlpha = 1 - (st.t - s.t) / 1.2; dot(g, s.x, s.y, 10, '#2f9e44'); text(g, '+1', s.x, s.y - 14, '#2f9e44', 10, 'center', 700); g.globalAlpha = 1; });
+      st.bugs.forEach(b => {
+        const w = Math.sin(st.t * 22 + b.ph) * 3;
+        g.strokeStyle = C.ink; g.lineWidth = 1.5; g.beginPath();
+        for (const dx of [-5, 0, 5]) { g.moveTo(b.x + dx, b.y); g.lineTo(b.x + dx + w, b.y - 10); g.moveTo(b.x + dx, b.y); g.lineTo(b.x + dx - w, b.y + 10); }
+        g.stroke();
+        g.beginPath(); g.ellipse(b.x, b.y, 10, 6.5, 0, 0, TAU); g.fillStyle = C.red; g.fill(); g.strokeStyle = C.ink; g.stroke();
+        dot(g, b.x + 10, b.y, 3.5, C.ink);
+      });
+      text(g, `SQUASHED ${st.score}`, 10, 290, C.ink, 11, 'left', 700);
+      text(g, '♥'.repeat(Math.max(0, st.lives)) + '♡'.repeat(3 - Math.max(0, st.lives)), 360, 290, C.red, 13, 'right', 700);
+      if (st.mode === 'idle') overlay(g, 'BUG SQUASH', 'TAP TO START · TAP BUGS BEFORE THEY SHIP', st.best);
+      if (st.mode === 'over') overlay(g, `${st.score} BUGS SQUASHED`, 'BUGS HIT PRODUCTION · TAP TO RETRY', st.best);
+    }
+  },
+
+  brackets: {
+    game: true,
+    pairs: {'(': ')', '[': ']', '{': '}'},
+    st: {mode: 'idle', opens: [], closed: [], round: 0, lives: 3, time: 0, limit: 1, flash: 0, best: best('brackets', 0)},
+    newRound() {
+      const st = this.st, n = 3 + Math.min(8, st.round);
+      st.opens = Array.from({length: n}, () => '([{'[Math.random() * 3 | 0]); st.closed = [];
+      st.limit = 3 + n * .75; st.time = st.limit;
+    },
+    start() { Object.assign(this.st, {mode: 'play', round: 0, lives: 3}); this.newRound(); },
+    lose() { const st = this.st; st.lives--; st.flash = -.5; zap([40, 30, 40]); if (st.lives <= 0) { st.mode = 'over'; st.best = best('brackets', st.round); } },
+    press(c) {
+      const st = this.st;
+      if (st.mode !== 'play') { this.start(); return; }
+      const need = this.pairs[st.opens[st.opens.length - 1 - st.closed.length]];
+      if (c === need) {
+        st.closed.push(c); zap(6);
+        if (st.closed.length === st.opens.length) { st.round++; st.flash = .5; this.newRound(); }
+      } else this.lose();
+    },
+    pointer(x, y) { if (this.st.mode !== 'play') { this.start(); return; } if (y > 214) this.press(')]}'[Math.min(2, Math.floor((x - 10) / 127))]); },
+    key(k) {
+      if (')]}'.includes(k)) { this.press(k); return true; }
+      if ('([{'.includes(k)) { this.press(this.pairs[k]); return true; }
+      if (startKey(k) && this.st.mode !== 'play') { this.start(); return true; }
+      return false;
+    },
+    step(dt) {
+      const st = this.st;
+      st.flash *= Math.pow(.02, dt);
+      if (st.mode !== 'play') return;
+      st.time -= dt;
+      if (st.time <= 0) { this.lose(); if (st.mode === 'play') this.newRound(); }
+    },
+    draw(g) {
+      const st = this.st, all = st.opens.length + st.closed.length, cw = 15, x0 = 200 - all * cw / 2;
+      if (st.flash) { g.fillStyle = (st.flash > 0 ? '#2f9e44' : C.red) + '22'; g.fillRect(0, 0, W, H); }
+      text(g, `ROUND ${st.round + 1}`, 12, 24, C.ink, 12, 'left', 700);
+      text(g, '♥'.repeat(Math.max(0, st.lives)) + '♡'.repeat(3 - Math.max(0, st.lives)), 388, 24, C.red, 13, 'right', 700);
+      text(g, 'CLOSE THEM IN THE RIGHT ORDER (LAST OPENED, FIRST CLOSED)', 200, 52, C.muted, 8, 'center', 600);
+      st.opens.forEach((c, i) => {
+        const matched = i >= st.opens.length - st.closed.length;
+        text(g, c, x0 + i * cw + cw / 2, 116, matched ? C.muted + '88' : C.blue, 26, 'center', 700);
+      });
+      st.closed.forEach((c, i) => text(g, c, x0 + (st.opens.length + i) * cw + cw / 2, 116, '#2f9e44', 26, 'center', 700));
+      if (st.mode === 'play') {
+        const nx = x0 + (st.opens.length + st.closed.length) * cw + 2;
+        if (Math.floor(st.time * 3) % 2) { g.fillStyle = C.amber; g.fillRect(nx, 94, 2, 28); }
+      }
+      g.fillStyle = C.line; g.fillRect(40, 150, 320, 8);
+      g.fillStyle = st.time / st.limit < .3 ? C.red : C.amber; g.fillRect(40, 150, 320 * Math.max(0, st.time / st.limit), 8);
+      [')', ']', '}'].forEach((c, i) => {
+        const x = 10 + i * 127;
+        g.fillStyle = C.card; g.fillRect(x, 214, 119, 72); g.strokeStyle = C.ink; g.lineWidth = 2; g.strokeRect(x, 214, 119, 72);
+        g.fillStyle = C.ink; g.fillRect(x + 4, 282, 115, 4);
+        text(g, c, x + 59.5, 262, C.ink, 32, 'center', 700);
+      });
+      if (st.mode === 'idle') overlay(g, 'BRACKET MATCH', 'TAP TO START · CLOSE EVERY BRACKET', st.best);
+      if (st.mode === 'over') overlay(g, `SYNTAX ERROR · ROUND ${st.round + 1}`, 'TAP TO RETRY', st.best);
+    }
+  },
+
+  binary: {
+    game: true,
+    st: {mode: 'idle', bits: 0, target: 0, score: 0, time: 0, limit: 1, ok: 0, best: best('binary', 0)},
+    newTarget() {
+      const st = this.st;
+      do st.target = 1 + Math.random() * 255 | 0; while (st.target === st.bits);
+      st.limit = Math.max(5, 14 - st.score * .6); st.time = st.limit;
+    },
+    start() { Object.assign(this.st, {mode: 'play', bits: 0, score: 0}); this.newTarget(); },
+    toggle(i) {
+      const st = this.st;
+      st.bits ^= 1 << (7 - i); zap(5);
+      if (st.bits === st.target) { st.score++; st.ok = .6; zap([10, 30, 10]); this.newTarget(); }
+    },
+    pointer(x, y) {
+      if (this.st.mode !== 'play') { this.start(); return; }
+      if (y > 112 && y < 214) { const i = Math.floor((x - 16) / 46); if (i >= 0 && i < 8) this.toggle(i); }
+    },
+    key(k) {
+      if (k >= '1' && k <= '8') { if (this.st.mode === 'play') this.toggle(+k - 1); return true; }
+      if (startKey(k) && this.st.mode !== 'play') { this.start(); return true; }
+      return false;
+    },
+    step(dt) {
+      const st = this.st;
+      st.ok = Math.max(0, st.ok - dt);
+      if (st.mode !== 'play') return;
+      st.time -= dt;
+      if (st.time <= 0) { st.mode = 'over'; st.best = best('binary', st.score); zap([40, 30, 40]); }
+    },
+    draw(g) {
+      const st = this.st;
+      if (st.ok) { g.fillStyle = '#2f9e44' + '22'; g.fillRect(0, 0, W, H); }
+      text(g, 'MAKE', 16, 38, C.muted, 10);
+      text(g, String(st.target), 16, 80, C.ink, 40, 'left', 700);
+      text(g, `SCORE ${st.score}`, 384, 38, C.ink, 12, 'right', 700);
+      text(g, `YOU HAVE ${st.bits}`, 384, 76, st.bits > st.target ? C.red : C.blue, 14, 'right', 700);
+      for (let i = 0; i < 8; i++) {
+        const x = 16 + i * 46, on = st.bits >> (7 - i) & 1;
+        g.fillStyle = on ? C.amber : C.card; g.fillRect(x, 120, 40, 60);
+        g.strokeStyle = C.ink; g.lineWidth = 2; g.strokeRect(x, 120, 40, 60);
+        text(g, String(on), x + 20, 160, on ? '#1d2321' : C.muted, 24, 'center', 700);
+        text(g, String(1 << (7 - i)), x + 20, 200, C.muted, 10, 'center', 600);
+      }
+      g.fillStyle = C.line; g.fillRect(16, 230, 368, 8);
+      g.fillStyle = st.time / st.limit < .3 ? C.red : C.amber; g.fillRect(16, 230, 368 * Math.max(0, st.time / st.limit), 8);
+      text(g, 'TAP BITS TO FLIP THEM · KEYS 1–8', 200, 270, C.muted, 9, 'center');
+      if (st.mode === 'idle') overlay(g, 'BINARY BLITZ', 'TAP TO START · BUILD THE NUMBER IN BITS', st.best);
+      if (st.mode === 'over') overlay(g, `TIME UP · ${st.score} SOLVED`, 'TAP TO RETRY', st.best);
+    }
+  },
+
+  stack: {
+    game: true,
+    names: ['main()', 'init()', 'route()', 'render()', 'fetch()', 'parse()', 'map()', 'filter()', 'reduce()', 'sort()', 'hash()', 'emit()', 'await()', 'resolve()'],
+    st: {mode: 'idle', blocks: [], cur: null, cam: 0, score: 0, falling: [], perfect: 0, best: best('stack', 0)},
+    start() { Object.assign(this.st, {mode: 'play', blocks: [{x: 110, w: 180}], score: 0, cam: 0, falling: [], perfect: 0}); this.spawn(); },
+    spawn() { const st = this.st, top = st.blocks[st.blocks.length - 1]; st.cur = {x: st.score % 2 ? 400 - top.w : 0, w: top.w, dir: st.score % 2 ? -1 : 1, v: 130 + st.score * 9}; },
+    drop() {
+      const st = this.st, top = st.blocks[st.blocks.length - 1], c = st.cur, row = st.blocks.length;
+      if (Math.abs(c.x - top.x) < 4) { c.x = top.x; st.perfect = .6; zap([8, 20, 8]); }
+      const l = Math.max(c.x, top.x), r = Math.min(c.x + c.w, top.x + top.w);
+      if (r <= l) { st.falling.push({x: c.x, w: c.w, row, y: 0, vy: 0}); st.cur = null; st.mode = 'over'; st.best = best('stack', st.score); zap([50, 30, 50]); return; }
+      if (c.x < l) st.falling.push({x: c.x, w: l - c.x, row, y: 0, vy: 0});
+      if (c.x + c.w > r) st.falling.push({x: r, w: c.x + c.w - r, row, y: 0, vy: 0});
+      st.blocks.push({x: l, w: r - l}); st.score++; zap(8);
+      this.spawn();
+    },
+    pointer() { if (this.st.mode !== 'play') this.start(); else this.drop(); },
+    key(k) { if (startKey(k)) { this.pointer(); return true; } return false; },
+    step(dt) {
+      const st = this.st;
+      st.perfect = Math.max(0, st.perfect - dt);
+      st.cam += (Math.max(0, (st.blocks.length - 9) * 22) - st.cam) * Math.min(1, dt * 6);
+      st.falling.forEach(f => { f.vy += 700 * dt; f.y += f.vy * dt; });
+      st.falling = st.falling.filter(f => f.y < 420);
+      if (st.mode !== 'play' || !st.cur) return;
+      const c = st.cur; c.x += c.dir * c.v * dt;
+      if (c.x < 0) { c.x = 0; c.dir = 1; } if (c.x + c.w > 400) { c.x = 400 - c.w; c.dir = -1; }
+    },
+    draw(g) {
+      const st = this.st, rowY = i => 274 - i * 22 + st.cam;
+      const blk = (x, w, i, alpha = 1) => {
+        const y = rowY(i); if (y < -24 || y > 300) return;
+        g.globalAlpha = alpha; g.fillStyle = i === 0 ? C.ink : i % 2 ? C.blue : C.amber; g.fillRect(x, y, w, 20);
+        if (w > 46) text(g, this.names[i % this.names.length], x + w / 2, y + 14, i % 2 || i === 0 ? '#ffffff' : '#1d2321', 10, 'center', 700);
+        g.globalAlpha = 1;
+      };
+      st.blocks.forEach((b, i) => blk(b.x, b.w, i));
+      if (st.cur) blk(st.cur.x, st.cur.w, st.blocks.length);
+      st.falling.forEach(f => { g.save(); g.translate(0, f.y); blk(f.x, f.w, f.row, .7); g.restore(); });
+      text(g, `CALL DEPTH ${st.score}`, 12, 22, C.ink, 12, 'left', 700);
+      if (st.perfect) text(g, 'PERFECT', 388, 22, '#2f9e44', 12, 'right', 700);
+      if (st.mode === 'idle') overlay(g, 'CALL STACK', 'TAP TO START · TAP TO DROP EACH FRAME', st.best);
+      if (st.mode === 'over') overlay(g, `SEGFAULT AT DEPTH ${st.score}`, 'TAP TO RETRY', st.best);
+    }
+  }
+});
+
 /* ---------- setup ---------- */
 const items = [];
 document.querySelectorAll('.ex').forEach(el => {
@@ -761,7 +992,16 @@ document.querySelectorAll('.ex').forEach(el => {
     const set = () => { ex.st[inp.dataset.k] = +inp.value; out.textContent = fmt(+inp.value); if (paused) paint(it); };
     inp.addEventListener('input', set); set();
   });
-  if (ex.tap) {
+  if (ex.pointer) {
+    // games: react on pointer-down (no tap delay), map the touch into the 400×300 drawing space
+    cv.tabIndex = 0; cv.style.cursor = 'pointer';
+    cv.addEventListener('pointerdown', e => {
+      const r = cv.getBoundingClientRect();
+      ex.pointer((e.clientX - r.left) / r.width * W, (e.clientY - r.top) / r.height * H);
+      paint(it); kick();
+    });
+    cv.addEventListener('keydown', e => { if (ex.key && ex.key(e.key)) { e.preventDefault(); paint(it); kick(); } });
+  } else if (ex.tap) {
     cv.tabIndex = 0; cv.style.cursor = 'pointer';
     const act = () => { ex.tap(); try { matchMedia('(pointer: coarse)').matches && navigator.vibrate && navigator.vibrate(8); } catch (e) {} if (paused) paint(it); };
     cv.addEventListener('click', act);
@@ -793,10 +1033,12 @@ let raf = 0, last = 0;
 const frame = now => {
   const dt = Math.min(.05, (now - last) / 1000); last = now;
   let any = false;
-  for (const it of items) if (it.vis) { any = true; it.ex.step(dt); paint(it); }
-  raf = any && !paused && !document.hidden ? requestAnimationFrame(frame) : 0;
+  for (const it of items) if (live(it)) { any = true; it.ex.step(dt); paint(it); }
+  raf = any && !document.hidden ? requestAnimationFrame(frame) : 0;
 };
-const kick = () => { if (!raf && !paused && !document.hidden) { last = performance.now(); raf = requestAnimationFrame(frame); } };
+// games keep running while "pause all" is on: you start them yourself, so they are not ambient motion
+const live = it => it.vis && (!paused || it.ex.game);
+function kick() { if (!raf && !document.hidden && items.some(live)) { last = performance.now(); raf = requestAnimationFrame(frame); } }
 
 const io = new IntersectionObserver(es => {
   es.forEach(e => {

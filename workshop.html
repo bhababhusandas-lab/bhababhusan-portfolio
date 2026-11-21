@@ -34,10 +34,10 @@
 
 <main id="main">
   <section class="ws-hero">
-    <p class="ws-label">ANNEX A · 18 WORKING EXHIBITS</p>
+    <p class="ws-label">ANNEX A · 18 EXHIBITS + 4 GAMES</p>
     <h1>The <span class="hand">Workshop.</span></h1>
     <p class="ws-intro">The notebook ran out of pages, so the machines moved in here. Everything below runs live. Drag the sliders, tap the screens, and watch the mechanics, the electrics and the code do their thing.</p>
-    <nav class="ws-jump" aria-label="Workshop sections"><a href="#hardware">⚙ HARDWARE · 10</a><a href="#software">{ } SOFTWARE · 8</a></nav>
+    <nav class="ws-jump" aria-label="Workshop sections"><a href="#hardware">⚙ HARDWARE · 10</a><a href="#software">{ } SOFTWARE · 8</a><a href="#games">▶ CODE ARCADE · 4</a></nav>
     <svg class="ws-gears" viewBox="0 0 120 70" aria-hidden="true">
       <g class="g1"><circle cx="35" cy="35" r="22"/><circle cx="35" cy="35" r="6"/></g>
       <g class="g2"><circle cx="83" cy="35" r="15"/><circle cx="83" cy="35" r="4"/></g>
@@ -187,6 +187,42 @@
       <canvas aria-label="Conway's Game of Life cellular automaton"></canvas>
       <p class="ex-note">Conway's four rules on a grid of cells, and gliders and blinkers appear from nothing. A whole world from a few lines of code.</p>
       <p class="ex-hint">TAP TO RESEED</p>
+    </article>
+  </div>
+
+  <div class="ws-sec" id="games"><p class="ex-tag">BENCH 3</p><h2>Code <span class="hand">arcade.</span></h2>
+    <p class="ws-intro">Four quick games about the stuff programmers actually deal with. Tap a screen to play. Your best score stays on this device.</p></div>
+  <div class="ws-grid">
+    <article class="ex" data-ex="bugs">
+      <p class="ex-tag">GAME 01 · DEBUGGING</p>
+      <h2>Bug Squash</h2>
+      <canvas aria-label="Bug Squash game: tap the bugs before they reach production"></canvas>
+      <p class="ex-note">Bugs crawl across the code toward production. Tap them before they ship. Three escape and the release is ruined. They get faster as you go.</p>
+      <p class="ex-hint">TAP · OR SPACE TO START</p>
+    </article>
+
+    <article class="ex" data-ex="brackets">
+      <p class="ex-tag">GAME 02 · STACKS</p>
+      <h2>Bracket Match</h2>
+      <canvas aria-label="Bracket Match game: close the open brackets in the right order"></canvas>
+      <p class="ex-note">Close every open bracket before the timer runs out: last opened, first closed. It's the same stack every compiler keeps.</p>
+      <p class="ex-hint">TAP THE BUTTONS · OR TYPE ) ] }</p>
+    </article>
+
+    <article class="ex" data-ex="binary">
+      <p class="ex-tag">GAME 03 · BINARY</p>
+      <h2>Binary Blitz</h2>
+      <canvas aria-label="Binary Blitz game: flip bits to build the target number"></canvas>
+      <p class="ex-note">Flip the eight bits until they add up to the target. Each one you solve gives you a little less time for the next.</p>
+      <p class="ex-hint">TAP BITS · OR KEYS 1–8</p>
+    </article>
+
+    <article class="ex" data-ex="stack">
+      <p class="ex-tag">GAME 04 · CALL STACK</p>
+      <h2>Call Stack</h2>
+      <canvas aria-label="Call Stack game: drop each function frame squarely on the one below"></canvas>
+      <p class="ex-note">Each function call pushes a frame. Drop it right on the one below: the overhang gets cut off, so a miss is a segfault.</p>
+      <p class="ex-hint">TAP · OR SPACE TO DROP</p>
     </article>
   </div>
 
