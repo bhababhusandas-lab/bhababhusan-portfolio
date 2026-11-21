@@ -45,7 +45,7 @@ $$('nav a').forEach(a => {
     const o = document.createElement('div');
     o.className = 'rewind';
     o.setAttribute('aria-hidden', 'true');
-    o.innerHTML = '<span>◀◀ REWINDING</span><b>SHEET 06 → 01</b>';
+    o.innerHTML = '<span>◀◀ REWINDING</span><b>SHEET 07 → 01</b>';
     document.body.appendChild(o);
     scrollTo({top: 0, behavior: 'smooth'});
     let done = false;

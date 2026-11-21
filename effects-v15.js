@@ -17,7 +17,8 @@ const still = () => reduce || calm();
     ['materials', 'SHEET 03 · MATERIALS'],
     ['method', 'SHEET 04 · METHOD'],
     ['arcade', 'SHEET 05 · ARCADE'],
-    ['output', 'SHEET 06 · CONTACT']
+    ['workbench', 'SHEET 06 · WORKBENCH'],
+    ['output', 'SHEET 07 · CONTACT']
   ].map(([id, label]) => ({el: document.getElementById(id), id, label})).filter(s => s.el);
 
   // subtitle with a flip
