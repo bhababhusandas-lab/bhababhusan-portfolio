@@ -46,7 +46,7 @@ const gearPath = (g, x, y, z, m, a, internal = false) => {
 /* ---------- exhibits ---------- */
 const EX = {
   engine: {
-    st: {a: 0, rpm: 70},
+    st: {a: 0, rpm: 120},
     step(dt) { this.st.a += dt * this.st.rpm / 60 * TAU; },
     draw(g) {
       const {a} = this.st, cx = 200, cy = 222, r = 40, L = 110;
@@ -92,13 +92,16 @@ const EX = {
   planet: {
     st: {s: 0, dir: 1},
     tap() { this.st.dir *= -1; },
-    step(dt) { this.st.s += dt * .7 * this.st.dir; },
-    draw(g) {
+    step(dt) { this.st.s += dt * 1.3 * this.st.dir; },
+    draw(g, layer) {
       const x = 200, y = 150, m = 4.5, zs = 12, zp = 18, zr = 48;
       const ts = this.st.s, tc = ts * zs / (zs + zr); // ring fixed: carrier = sun × 12/60
       // ring
-      g.beginPath(); g.arc(x, y, 126, 0, TAU); gearPath(g, x, y, zr, m, 0, true);
-      g.fillStyle = C.muted + '55'; g.fill('evenodd'); g.strokeStyle = C.ink; g.lineWidth = 1.5; g.stroke();
+      layer('ring', g => {
+        g.beginPath(); g.arc(x, y, 126, 0, TAU); gearPath(g, x, y, zr, m, 0, true);
+        g.fillStyle = C.muted + '55'; g.fill('evenodd'); g.strokeStyle = C.ink; g.lineWidth = 1.5; g.stroke();
+        text(g, 'RING FIXED', 388, 290, C.muted, 10, 'right');
+      });
       // carrier
       const pc = [0, 1, 2].map(i => { const f = tc + i * TAU / 3; return [x + Math.cos(f) * (m * (zs + zp) / 2), y + Math.sin(f) * (m * (zs + zp) / 2), f]; });
       g.strokeStyle = C.amber; g.lineWidth = 9; g.lineJoin = 'round'; g.beginPath();
@@ -115,13 +118,12 @@ const EX = {
       dot(g, x, y, 5, C.paper);
       text(g, 'SUN ' + (this.st.dir > 0 ? '↻' : '↺'), 12, 22, C.blue, 10);
       text(g, 'CARRIER 5:1', 388, 22, C.amber, 10, 'right');
-      text(g, 'RING FIXED', 388, 290, C.muted, 10, 'right');
     }
   },
 
   phase: {
     st: {t: 0},
-    step(dt) { this.st.t += dt * 1.6; },
+    step(dt) { this.st.t += dt * 2.6; },
     draw(g) {
       const t = this.st.t, cx = 88, cy = 150, R = 62, x0 = 172, cols = [C.red, C.amber, C.blue];
       dot(g, cx, cy, R, null, C.line, 1.5);
@@ -130,7 +132,7 @@ const EX = {
       for (let k = 0; k < 3; k++) {
         const ph = k * TAU / 3, col = cols[k];
         g.strokeStyle = col; g.lineWidth = 2; g.beginPath();
-        for (let x = x0; x <= 392; x += 3) { const yy = cy - R * Math.sin(t - ph - (x - x0) * .035); x === x0 ? g.moveTo(x, yy) : g.lineTo(x, yy); }
+        for (let x = x0; x <= 392; x += 4) { const yy = cy - R * Math.sin(t - ph - (x - x0) * .035); x === x0 ? g.moveTo(x, yy) : g.lineTo(x, yy); }
         g.stroke();
         const tx = cx + R * Math.cos(t - ph), ty = cy - R * Math.sin(t - ph);
         g.setLineDash([3, 4]); line(g, tx, ty, x0, ty, col, 1); g.setLineDash([]);
@@ -148,7 +150,7 @@ const EX = {
     step(dt) {
       const s = this.st.speed / 100, target = .18 + s * .95;
       this.st.th += (target - this.st.th) * Math.min(1, dt * 2.5);
-      this.st.f += dt * (1.2 + s * 9);
+      this.st.f += dt * (2 + s * 11);
     },
     draw(g) {
       const {f, th} = this.st, x = 200, top = 62, L = 72;
@@ -183,16 +185,16 @@ const EX = {
     ratios: [[1, 1], [1, 2], [3, 2], [3, 4], [5, 4], [5, 6], [2, 3]],
     tap() { this.st.i = (this.st.i + 1) % this.ratios.length; },
     step(dt) { this.st.t += dt; },
-    draw(g) {
-      screen(g);
-      const [a, b] = this.ratios[this.st.i], d = this.st.t * .5, P = (u) => [200 + 150 * Math.sin(a * u + d), 150 + 112 * Math.sin(b * u)];
+    draw(g, layer) {
+      layer('scr', screen);
+      const [a, b] = this.ratios[this.st.i], d = this.st.t * .9, P = (u) => [200 + 150 * Math.sin(a * u + d), 150 + 112 * Math.sin(b * u)];
       const trace = (w, col) => {
         g.strokeStyle = col; g.lineWidth = w; g.beginPath();
-        for (let k = 0; k <= 360; k++) { const [x, y] = P(k / 360 * TAU); k ? g.lineTo(x, y) : g.moveTo(x, y); }
+        for (let k = 0; k <= 200; k++) { const [x, y] = P(k / 200 * TAU); k ? g.lineTo(x, y) : g.moveTo(x, y); }
         g.stroke();
       };
-      trace(7, '#69db7c22'); trace(1.6, C.green);
-      const [x, y] = P(this.st.t * 1.4);
+      trace(5, '#69db7c22'); trace(1.6, C.green);
+      const [x, y] = P(this.st.t * 2.4);
       dot(g, x, y, 7, '#69db7c44'); dot(g, x, y, 3, '#e9fbe9');
       text(g, `X:Y = ${a}:${b}`, 12, 20, C.green, 11);
       text(g, `φ ${Math.round((d * 180 / Math.PI) % 360)}°`, 388, 20, C.green, 11, 'right');
@@ -201,7 +203,7 @@ const EX = {
 
   cam: {
     st: {a: 0},
-    w: 1.4,
+    w: 2.2,
     R(phi) { return 46 + 30 * Math.pow(.5 + .5 * Math.cos(phi), 3); },
     step(dt) { this.st.a += dt * this.w; },
     draw(g) {
@@ -235,15 +237,15 @@ const EX = {
     tap() { this.st.dir *= -1; },
     step(dt) {
       this.st.t += dt;
-      if (this.st.t >= .6) { this.st.t -= .6; this.st.n = (this.st.n + this.st.dir + 16) % 16; }
+      if (this.st.t >= .35) { this.st.t -= .35; this.st.n = (this.st.n + this.st.dir + 16) % 16; }
     },
     digit(g, x, y, v) {
       const bits = this.seg[v], w = 38, h = 34, k = 7;
       const S = [[x + 4, y, w - 8, k], [x + w - k, y + 3, k, h - 3], [x + w - k, y + h + 3, k, h - 3], [x + 4, y + 2 * h, w - 8, k], [x, y + h + 3, k, h - 3], [x, y + 3, k, h - 3], [x + 4, y + h, w - 8, k]];
       S.forEach(([sx, sy, sw, sh], i) => { g.fillStyle = bits >> i & 1 ? '#ff6b3d' : '#ff6b3d1c'; g.fillRect(sx, sy, sw, sh); });
     },
-    draw(g) {
-      screen(g);
+    draw(g, layer) {
+      layer('scr', screen);
       const n = this.st.n;
       for (let b = 0; b < 4; b++) {
         const on = n >> (3 - b) & 1, x = 92 + b * 72;
@@ -258,7 +260,7 @@ const EX = {
       // clock trace
       g.strokeStyle = C.green; g.lineWidth = 1.5; g.beginPath();
       for (let x = 20; x <= 380; x += 2) {
-        const ph = ((x - 20) / 60 + this.st.t / .6) % 1, y = ph < .5 ? 248 : 276;
+        const ph = ((x - 20) / 60 + this.st.t / .35) % 1, y = ph < .5 ? 248 : 276;
         x === 20 ? g.moveTo(x, y) : g.lineTo(x, y);
       }
       g.stroke();
@@ -270,8 +272,8 @@ const EX = {
   rc: {
     st: {t: 0, tau: 60},
     step(dt) { this.st.t += dt; },
-    draw(g) {
-      screen(g);
+    draw(g, layer) {
+      layer('scr', screen);
       const tau = this.st.tau / 100, h = 1.2, k = Math.exp(-h / tau), lo = k / (1 + k), hi = 1 / (1 + k);
       const vin = s => (Math.floor(s / h) % 2 + 2) % 2 === 0 ? 1 : 0;
       const vc = s => { const u = ((s % h) + h) % h; return vin(s) ? 1 - (1 - lo) * Math.exp(-u / tau) : hi * Math.exp(-u / tau); };
@@ -291,8 +293,7 @@ const EX = {
 
   linkage: {
     st: {a: 0},
-    trace: null,
-    solve(a) {
+      solve(a) {
       const A = [112, 210], D = [232, 210], ca = 40, b = 120, c = 100;
       const B = [A[0] + ca * Math.cos(a), A[1] - ca * Math.sin(a)];
       const dx = D[0] - B[0], dy = D[1] - B[1], e = Math.hypot(dx, dy);
@@ -304,15 +305,18 @@ const EX = {
       const P = [B[0] + ux * 60 + uy * 64, B[1] + uy * 60 - ux * 64];
       return {A, B, C: Cp, D, P};
     },
-    step(dt) { this.st.a += dt * 1.3; },
-    draw(g) {
-      if (!this.trace) { this.trace = []; for (let k = 0; k <= 180; k++) this.trace.push(this.solve(k / 180 * TAU).P); }
+    step(dt) { this.st.a += dt * 2.2; },
+    draw(g, layer) {
       const {A, B, C: Cc, D, P} = this.solve(this.st.a);
-      g.setLineDash([4, 4]); g.strokeStyle = C.blue; g.lineWidth = 1.5; g.beginPath();
-      this.trace.forEach(([x, y], i) => i ? g.lineTo(x, y) : g.moveTo(x, y)); g.stroke(); g.setLineDash([]);
-      // ground
-      line(g, A[0], A[1], D[0], D[1], C.line, 2);
-      [A, D].forEach(([x, y]) => { g.fillStyle = C.ink; g.beginPath(); g.moveTo(x, y); g.lineTo(x - 10, y + 16); g.lineTo(x + 10, y + 16); g.closePath(); g.fill(); });
+      layer('path', g => {
+        g.setLineDash([4, 4]); g.strokeStyle = C.blue; g.lineWidth = 1.5; g.beginPath();
+        for (let k = 0; k <= 180; k++) { const [x, y] = this.solve(k / 180 * TAU).P; k ? g.lineTo(x, y) : g.moveTo(x, y); }
+        g.stroke(); g.setLineDash([]);
+        line(g, A[0], A[1], D[0], D[1], C.line, 2);
+        [A, D].forEach(([x, y]) => { g.fillStyle = C.ink; g.beginPath(); g.moveTo(x, y); g.lineTo(x - 10, y + 16); g.lineTo(x + 10, y + 16); g.closePath(); g.fill(); });
+        text(g, 'CRANK', A[0], A[1] + 34, C.red, 9, 'center'); text(g, 'ROCKER', D[0], D[1] + 34, C.muted, 9, 'center');
+        text(g, 'COUPLER CURVE', 388, 22, C.blue, 9, 'right');
+      });
       // coupler triangle
       g.fillStyle = C.amber + '44'; g.beginPath(); g.moveTo(B[0], B[1]); g.lineTo(Cc[0], Cc[1]); g.lineTo(P[0], P[1]); g.closePath(); g.fill();
       line(g, B[0], B[1], P[0], P[1], C.amber, 3); line(g, Cc[0], Cc[1], P[0], P[1], C.amber, 3);
@@ -321,8 +325,6 @@ const EX = {
       line(g, D[0], D[1], Cc[0], Cc[1], C.ink, 5);
       [A, B, Cc, D].forEach(([x, y]) => dot(g, x, y, 5, C.paper, C.ink, 2));
       dot(g, P[0], P[1], 6, C.blue);
-      text(g, 'CRANK', A[0], A[1] + 34, C.red, 9, 'center'); text(g, 'ROCKER', D[0], D[1] + 34, C.muted, 9, 'center');
-      text(g, 'COUPLER CURVE', 388, 22, C.blue, 9, 'right');
     }
   },
 
@@ -333,12 +335,12 @@ const EX = {
       const N = 15, t = this.st.t;
       line(g, 200, 14, 200, 286, C.line, 1.5);
       for (let i = 0; i < N; i++) {
-        const y = 24 + i * 18, w = TAU * (18 + i) / 36, x = 200 + 160 * Math.sin(w * t);
+        const y = 24 + i * 18, w = TAU * (12 + i) / 24, x = 200 + 160 * Math.sin(w * t);
         line(g, 200, y, x, y, C.muted, 1);
         dot(g, x, y, 7, i % 2 ? C.blue : C.amber, C.ink, 1.2);
       }
       dot(g, 200, 24 + 7 * 18, 3, C.ink);
-      text(g, `REALIGN IN ${Math.ceil(36 - (t % 36))} s`, 392, 292, C.muted, 9, 'right');
+      text(g, `REALIGN IN ${Math.ceil(24 - (t % 24))} s`, 392, 292, C.muted, 9, 'right');
     }
   }
 };
@@ -349,13 +351,13 @@ document.querySelectorAll('.ex').forEach(el => {
   const ex = EX[el.dataset.ex];
   const cv = el.querySelector('canvas');
   if (!ex || !cv) return;
-  const it = {el, ex, cv, g: cv.getContext('2d'), vis: false, scale: 1};
+  const it = {el, ex, cv, g: cv.getContext('2d'), vis: false, scale: 1, cache: {}};
   items.push(it);
   const fit = () => {
-    const dpr = Math.min(2, devicePixelRatio || 1), w = cv.clientWidth;
+    const dpr = Math.min(1.5, devicePixelRatio || 1), w = cv.clientWidth;
     if (!w) return;
     cv.width = Math.round(w * dpr); cv.height = Math.round(w * .75 * dpr);
-    it.scale = cv.width / W;
+    it.scale = cv.width / W; it.cache = {};
     paint(it);
   };
   new ResizeObserver(fit).observe(cv);
@@ -374,11 +376,21 @@ document.querySelectorAll('.ex').forEach(el => {
   }
 });
 
+// parts that never move (screen grids, the fixed ring gear, the linkage path) are drawn once into an
+// offscreen layer and stamped each frame, instead of rebuilding hundreds of path points every frame
 function paint(it) {
   const {g, scale} = it;
   g.setTransform(scale, 0, 0, scale, 0, 0);
   g.clearRect(0, 0, W, H);
-  it.ex.draw(g);
+  it.ex.draw(g, (key, fn) => {
+    let c = it.cache[key];
+    if (!c) {
+      c = document.createElement('canvas'); c.width = it.cv.width; c.height = it.cv.height;
+      const cg = c.getContext('2d'); cg.setTransform(scale, 0, 0, scale, 0, 0); fn(cg);
+      it.cache[key] = c;
+    }
+    g.drawImage(c, 0, 0, W, H);
+  });
 }
 
 // paused or reduced motion: show a representative frame instead of a blank one
@@ -398,11 +410,16 @@ const io = new IntersectionObserver(es => {
     const it = items.find(i => i.el === e.target);
     if (!it) return;
     it.vis = e.isIntersecting;
-    if (e.isIntersecting) { it.el.classList.add('seen'); paint(it); }
+    if (e.isIntersecting) paint(it);
   });
   kick();
-}, {rootMargin: '80px 0px'});
+}, {rootMargin: '0px'});
 items.forEach(it => io.observe(it.el));
+// cards fade in well before they reach the screen, so a fast scroll never shows blank boxes
+const reveal = new IntersectionObserver(es => es.forEach(e => {
+  if (e.isIntersecting) { e.target.classList.add('seen'); reveal.unobserve(e.target); }
+}), {rootMargin: '0px 0px 300px 0px'});
+items.forEach(it => reveal.observe(it.el));
 document.addEventListener('visibilitychange', kick);
 
 /* ---------- header buttons ---------- */
@@ -421,7 +438,7 @@ const syncTheme = () => {
   const dark = root.dataset.theme === 'dark';
   tbtn.setAttribute('aria-pressed', String(dark));
   document.querySelector('meta[name=theme-color]').content = dark ? '#0e2350' : '#f3efe4';
-  readColors(); items.forEach(paint);
+  readColors(); items.forEach(it => { it.cache = {}; paint(it); });
 };
 tbtn.addEventListener('click', () => {
   root.dataset.theme = root.dataset.theme === 'dark' ? 'light' : 'dark';
