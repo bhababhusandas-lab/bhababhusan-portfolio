@@ -314,3 +314,4 @@ import('./effects-v22.js');
 import('./effects-v23.js');
 import('./effects-v24.js');
 import('./effects-v25.js');
+import('./effects-v26.js');
