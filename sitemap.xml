@@ -13,4 +13,10 @@
       <image:loc>https://bhababhusan-portfolio.vercel.app/assets/og-image.png</image:loc>
     </image:image>
   </url>
+  <url>
+    <loc>https://bhababhusan-portfolio.vercel.app/workshop</loc>
+    <lastmod>2026-11-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
 </urlset>

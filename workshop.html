@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f3efe4">
+<meta name="description" content="The Workshop: live mechanical and electrical exhibits by Bhababhusan Das. A piston engine, planetary gears, three-phase power, a governor, an oscilloscope and more.">
+<meta name="author" content="Bhababhusan Das">
+<title>The Workshop | Bhababhusan Das</title>
+<link rel="canonical" href="https://bhababhusan-portfolio.vercel.app/workshop">
+<meta property="og:url" content="https://bhababhusan-portfolio.vercel.app/workshop">
+<meta property="og:title" content="The Workshop | Bhababhusan Das">
+<meta property="og:description" content="Live mechanical and electrical exhibits: engines, gears, phasors, scopes and logic.">
+<meta property="og:image" content="https://bhababhusan-portfolio.vercel.app/assets/og-image.png">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/favicon.png">
+<script>try{document.documentElement.dataset.motion=localStorage.getItem('portfolio-motion')==='calm'?'calm':'full'}catch(e){document.documentElement.dataset.motion='full'}</script>
+<script>try{document.documentElement.dataset.theme=localStorage.getItem('portfolio-theme')==='dark'?'dark':'light'}catch(e){document.documentElement.dataset.theme='light'}</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="workshop.css">
+<script>window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };</script>
+<script defer src="/_vercel/insights/script.js"></script>
+</head>
+<body>
+<header class="ws-head">
+  <a class="ws-back" href="/"><span aria-hidden="true">←</span> NOTEBOOK</a>
+  <span class="ws-mark"><b>THE WORKSHOP</b><small>BHABABHUSAN DAS · ANNEX A</small></span>
+  <button id="ws-motion" class="ws-btn" type="button" aria-pressed="false">PAUSE ALL</button>
+  <button id="ws-theme" class="ws-btn" type="button" aria-pressed="false">BLUEPRINT</button>
+</header>
+
+<main id="main">
+  <section class="ws-hero">
+    <p class="ws-label">ANNEX A · 10 WORKING EXHIBITS</p>
+    <h1>The <span class="hand">Workshop.</span></h1>
+    <p class="ws-intro">The notebook ran out of pages, so the machines moved in here. Everything below runs live. Drag the sliders, tap the screens, and watch the mechanics and the electrics do their thing.</p>
+    <svg class="ws-gears" viewBox="0 0 120 70" aria-hidden="true">
+      <g class="g1"><circle cx="35" cy="35" r="22"/><circle cx="35" cy="35" r="6"/></g>
+      <g class="g2"><circle cx="83" cy="35" r="15"/><circle cx="83" cy="35" r="4"/></g>
+    </svg>
+  </section>
+
+  <div class="ws-grid">
+    <article class="ex" data-ex="engine">
+      <p class="ex-tag">EXH. 01 · MECHANICAL</p>
+      <h2>Four-stroke engine</h2>
+      <canvas aria-label="Animated single-cylinder four-stroke engine"></canvas>
+      <p class="ex-note">Intake, compression, power, exhaust: two turns of the crank for every bang. The valves open only on their stroke.</p>
+      <label class="ex-ctl">THROTTLE <input type="range" min="20" max="200" value="70" data-k="rpm"> <output>70 RPM</output></label>
+    </article>
+
+    <article class="ex" data-ex="planet">
+      <p class="ex-tag">EXH. 02 · MECHANICAL</p>
+      <h2>Planetary gearbox</h2>
+      <canvas aria-label="Animated planetary gear set: sun, three planets and a fixed ring"></canvas>
+      <p class="ex-note">Sun 12T drives three 18T planets inside a fixed 48T ring. The carrier comes out 5× slower and 5× stronger.</p>
+      <p class="ex-hint">TAP TO REVERSE</p>
+    </article>
+
+    <article class="ex" data-ex="phase">
+      <p class="ex-tag">EXH. 03 · ELECTRICAL</p>
+      <h2>Three-phase supply</h2>
+      <canvas aria-label="Three rotating phasors 120 degrees apart and their sine waves"></canvas>
+      <p class="ex-note">Three phasors 120° apart trace the R, Y and B waves. At every instant they add up to zero, which is why a balanced load needs no neutral current.</p>
+    </article>
+
+    <article class="ex" data-ex="governor">
+      <p class="ex-tag">EXH. 04 · MECHANICAL</p>
+      <h2>Centrifugal governor</h2>
+      <canvas aria-label="Spinning Watt centrifugal governor whose balls rise with speed"></canvas>
+      <p class="ex-note">Spin faster and the flyballs swing out, lifting the sleeve that closes the steam valve. This was feedback control before electronics.</p>
+      <label class="ex-ctl">SPEED <input type="range" min="0" max="100" value="45" data-k="speed"> <output>45%</output></label>
+    </article>
+
+    <article class="ex" data-ex="scope">
+      <p class="ex-tag">EXH. 05 · ELECTRICAL</p>
+      <h2>Lissajous scope</h2>
+      <canvas aria-label="Oscilloscope drawing a slowly rotating Lissajous figure"></canvas>
+      <p class="ex-note">Feed one sine to X and another to Y. The frequency ratio draws the shape, and a slow phase drift makes it turn.</p>
+      <p class="ex-hint">TAP THE SCREEN TO CHANGE THE RATIO</p>
+    </article>
+
+    <article class="ex" data-ex="cam">
+      <p class="ex-tag">EXH. 06 · MECHANICAL</p>
+      <h2>Cam &amp; follower</h2>
+      <canvas aria-label="Rotating cam lifting a roller follower, with its lift plotted over time"></canvas>
+      <p class="ex-note">A pear-shaped cam turns rotation into a timed lift, the same trick that opens the valves in Exhibit 01.</p>
+    </article>
+
+    <article class="ex" data-ex="counter">
+      <p class="ex-tag">EXH. 07 · DIGITAL</p>
+      <h2>4-bit counter</h2>
+      <canvas aria-label="Binary counter with LEDs, seven-segment readouts and a clock trace"></canvas>
+      <p class="ex-note">Each clock edge ripples through four flip-flops. Same number, three ways: binary LEDs, decimal and hex.</p>
+      <p class="ex-hint">TAP TO COUNT UP / DOWN</p>
+    </article>
+
+    <article class="ex" data-ex="rc">
+      <p class="ex-tag">EXH. 08 · ELECTRICAL</p>
+      <h2>RC charging</h2>
+      <canvas aria-label="Square wave charging and discharging a capacitor"></canvas>
+      <p class="ex-note">A square wave pushes charge into a capacitor through a resistor. Small τ follows the edges, big τ smooths them into a ripple.</p>
+      <label class="ex-ctl">τ = RC <input type="range" min="10" max="200" value="60" data-k="tau"> <output>0.60 s</output></label>
+    </article>
+
+    <article class="ex" data-ex="linkage">
+      <p class="ex-tag">EXH. 09 · MECHANICAL</p>
+      <h2>Four-bar linkage</h2>
+      <canvas aria-label="Crank-rocker four-bar linkage tracing its coupler curve"></canvas>
+      <p class="ex-note">Four bars, four pins, one motor. A point on the coupler draws this teardrop, the basis of wipers, pumps and walking machines.</p>
+    </article>
+
+    <article class="ex" data-ex="pendulum">
+      <p class="ex-tag">EXH. 10 · PHYSICS</p>
+      <h2>Pendulum wave</h2>
+      <canvas aria-label="Fifteen pendulums of different lengths forming travelling waves, seen from above"></canvas>
+      <p class="ex-note">Fifteen pendulums, each a little shorter than the last, seen from above. They drift into snakes and braids, then line up again every 36 seconds.</p>
+    </article>
+  </div>
+
+  <footer class="ws-foot">
+    <span>THE WORKSHOP · ANNEX A OF THE LAB NOTEBOOK</span>
+    <a class="ws-btn" href="/">BACK TO THE NOTEBOOK ↗</a>
+  </footer>
+</main>
+<script type="module" src="workshop.js"></script>
+</body>
+</html>

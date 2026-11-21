@@ -1,0 +1,22 @@
+/* Lab Notebook · v27: doorway to the Workshop annex page */
+.workshop-door{display:flex;align-items:center;gap:22px;margin-top:44px;padding:20px 24px;border:1.5px solid var(--ink);background:var(--card);box-shadow:6px 6px 0 var(--ink);
+  transition:transform .2s,box-shadow .2s}
+.workshop-door:hover{transform:translate(-2px,-2px);box-shadow:9px 9px 0 var(--ink)}
+.workshop-door:active{transform:translate(4px,4px);box-shadow:2px 2px 0 var(--ink)}
+.door-gears{flex:none;width:96px;fill:none;stroke:var(--ink);stroke-width:2}
+.door-gears circle:first-child{stroke-dasharray:6 4}
+.door-gears .dg2 circle:first-child{stroke:var(--amber)}
+.dg1{transform-origin:35px 35px;animation:door-spin 6s linear infinite}
+.dg2{transform-origin:83px 35px;animation:door-spin 4.2s linear infinite reverse}
+.workshop-door:hover .dg1,.workshop-door:hover .dg2{animation-duration:1.4s}
+@keyframes door-spin{to{transform:rotate(360deg)}}
+.door-text{display:flex;flex-direction:column;gap:2px;min-width:0}
+.door-text small{font:500 10px var(--mono);letter-spacing:.14em;color:var(--blue)}
+.door-text b{font-size:clamp(22px,3vw,30px);font-weight:600;letter-spacing:-.03em;line-height:1.1}
+.door-text em{font-style:normal;font-size:14px;color:var(--muted)}
+.door-arrow{margin-left:auto;font-size:30px;transition:transform .25s}
+.workshop-door:hover .door-arrow{transform:translateX(6px)}
+html[data-motion=calm] .dg1,html[data-motion=calm] .dg2{animation:none}
+@media (prefers-reduced-motion:reduce){.dg1,.dg2{animation:none}}
+@media (max-width:700px){.workshop-door{flex-wrap:wrap;gap:8px 14px;padding:16px}.door-gears{width:64px}.door-arrow{font-size:24px}
+  .door-text{order:3;flex:1 1 100%}}
