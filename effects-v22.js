@@ -13,9 +13,8 @@ const store = {
 
 const method = $('#method');
 if (method) {
-  const games = document.createElement('div');
-  games.className = 'arcade-more';
-  method.appendChild(games);
+  let games = document.querySelector('#arcade .arcade-shelf');
+  if (!games) { games = document.createElement('div'); games.className = 'arcade-more'; method.appendChild(games); }
   wireUp(games);
   reflex(games);
   const mech = document.createElement('div');
@@ -47,7 +46,7 @@ function gameShell(parent, {fig, title, blurb, art, label}){
 /* ===================== Wire Up: rotate tiles until every LED is powered ===================== */
 function wireUp(parent){
   const {dlg, wrap, play} = gameShell(parent, {
-    fig: 'FIG. 4.4 — BREAK ROOM', title: 'Wire Up', label: 'Wire Up puzzle',
+    fig: 'FIG. 5.2 — ARCADE', title: 'Wire Up', label: 'Wire Up puzzle',
     blurb: 'Rotate the tiles to route power from the battery to every LED on the board.',
     art: `<svg viewBox="0 0 120 60"><g class="wu-art"><rect x="6" y="6" width="48" height="48"/><rect x="60" y="6" width="48" height="48"/>
       <path class="w1" d="M30 30H54M30 30V6"/><path class="w2" d="M84 30H60M84 30V54"/><circle cx="30" cy="30" r="6"/><circle class="led" cx="84" cy="30" r="6"/></g></svg>`
@@ -169,7 +168,7 @@ function wireUp(parent){
 /* ===================== Reflex Breaker: hit the breaker the instant the lamp goes green ===================== */
 function reflex(parent){
   const {dlg, wrap, play} = gameShell(parent, {
-    fig: 'FIG. 4.5 — BREAK ROOM', title: 'Reflex Breaker', label: 'Reflex Breaker reaction game',
+    fig: 'FIG. 5.3 — ARCADE', title: 'Reflex Breaker', label: 'Reflex Breaker reaction game',
     blurb: 'Wait for the lamp to turn green, then slam the breaker. Five rounds, how fast is your relay?',
     art: `<svg viewBox="0 0 120 60"><g class="rb-art"><rect x="40" y="6" width="40" height="48" rx="5"/><rect class="lever" x="52" y="14" width="16" height="18" rx="3"/>
       <circle class="lamp" cx="98" cy="20" r="8"/><circle cx="22" cy="20" r="8" class="lamp2"/></g></svg>`
@@ -230,7 +229,7 @@ function cradle(parent){
   fig.className = 'mech cradle';
   const PX = [92, 120, 148, 176, 204], PY = 22, L = 118, R = 13.6;
   fig.innerHTML = `
-    <div class="mech-head"><span class="mono-label">FIG. 4.6 — NEWTON’S CRADLE · PULL A BALL</span><span class="mech-led" aria-hidden="true"></span></div>
+    <div class="mech-head"><span class="mono-label">FIG. 4.4 — NEWTON’S CRADLE · PULL A BALL</span><span class="mech-led" aria-hidden="true"></span></div>
     <svg class="cradle-svg" viewBox="0 0 296 190" aria-label="Newton's cradle. Drag an end ball sideways and release." role="img">
       <path class="frame" d="M6 182V14H290V182M-4 182H300"/>
       ${PX.map((x, i) => `<g class="pend" data-i="${i}"><line class="str" x1="${x}" y1="${PY}" x2="${x}" y2="${PY + L}"/><circle class="ball" cx="${x}" cy="${PY + L}" r="${R}"/><circle class="shine" cx="${x - 4}" cy="${PY + L - 5}" r="3.5"/></g>`).join('')}
@@ -320,7 +319,7 @@ function geneva(parent){
   const slots = [0, 90, 180, 270].map(a => `<rect x="${16}" y="-6.5" width="${RW + 4}" height="13" rx="6.5" transform="rotate(${a})" fill="#000"/>`).join('');
   const cuts = [45, 135, 225, 315].map(a => { const ar = a * Math.PI / 180; return `<circle cx="${(Math.cos(ar) * C).toFixed(1)}" cy="${(Math.sin(ar) * C).toFixed(1)}" r="${RHO + 2}" fill="#000"/>`; }).join('');
   fig.innerHTML = `
-    <div class="mech-head"><span class="mono-label">FIG. 4.7 — GENEVA DRIVE · TAP TO CHANGE SPEED</span><span class="mech-led on" aria-hidden="true"></span></div>
+    <div class="mech-head"><span class="mono-label">FIG. 4.5 — GENEVA DRIVE · TAP TO CHANGE SPEED</span><span class="mech-led on" aria-hidden="true"></span></div>
     <svg class="gen-svg" viewBox="0 18 250 164" aria-label="Geneva drive mechanism: a continuously turning wheel advances a slotted wheel a quarter turn at a time" role="img">
       <defs>
         <mask id="gen-wheel" maskUnits="userSpaceOnUse" x="-60" y="-60" width="120" height="120"><circle r="${RW}" fill="#fff"/>${slots}${cuts}</mask>

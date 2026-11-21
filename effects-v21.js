@@ -128,12 +128,13 @@ function traceRunner(row){
     <div class="arcade-art" aria-hidden="true"><svg viewBox="0 0 120 60"><path class="t" d="M8 44H40V20H76V40H104"/><circle class="h" cx="104" cy="40" r="5"/>
       <g class="part"><rect x="54" y="47" width="16" height="8" rx="2"/><path d="M48 51h6M70 51h6"/></g></svg></div>
     <div class="arcade-txt">
-      <span class="mono-label">FIG. 4.3 — BREAK ROOM</span>
+      <span class="mono-label">FIG. 5.1 — ARCADE</span>
       <h3>Trace Runner</h3>
       <p>Guide the current around the board, collect components and don’t short the circuit.</p>
     </div>
     <button type="button" class="btn arcade-play">▶ PLAY</button>`;
-  row.after(card);
+  const shelf = document.querySelector('#arcade .arcade-shelf');
+  shelf ? shelf.prepend(card) : row.after(card); // games live on their own Arcade sheet
 
   const dlg = document.createElement('dialog');
   dlg.className = 'unfold game';
@@ -141,7 +142,7 @@ function traceRunner(row){
   dlg.innerHTML = `
     <button class="close" aria-label="Close game">×</button>
     <div class="game-wrap">
-      <p class="mono-label">FIG. 4.3 — BREAK ROOM · TRACE RUNNER</p>
+      <p class="mono-label">FIG. 5.1 — ARCADE · TRACE RUNNER</p>
       <div class="game-hud"><span>PARTS <b class="g-score">0</b></span><span>BEST <b class="g-best">0</b></span><span>SPEED <b class="g-speed">x1</b></span></div>
       <div class="game-board"><canvas tabindex="0" aria-label="Game board" role="img"></canvas><div class="game-msg"></div></div>
       <div class="dpad" aria-label="Direction controls">
